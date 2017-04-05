@@ -15,7 +15,9 @@ libraryDependencies ++= Seq(
 // https://mvnrepository.com/artifact/mysql/mysql-connector-java
 libraryDependencies += "mysql" % "mysql-connector-java" % "5.1.16"
 
+<<<<<<< HEAD
 libraryDependencies += evolutions
+=======
 
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
 
@@ -23,3 +25,4 @@ libraryDependencies ++= Seq(
   "com.adrianhurt" %% "play-bootstrap" % "1.1-P25-B3"
 )
 
+>>>>>>> 754b1a381f3af7c99868d2b78bdef9c8b2491179
