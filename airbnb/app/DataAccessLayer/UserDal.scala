@@ -1,4 +1,4 @@
-package DataAccessLayer
+package dataAccessLayer
 
 import com.google.inject.Inject
 import models.User

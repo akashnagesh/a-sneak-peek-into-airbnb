@@ -2,7 +2,7 @@ package controllers
 
 import javax.inject.{Inject, _}
 
-import DataAccessLayer.{UserActionMessages, UserDalImpl}
+import dataAccessLayer.{UserActionMessages, UserDalImpl}
 import models.{FormsData, User}
 import org.apache.commons.lang3.StringUtils
 import play.api.mvc._

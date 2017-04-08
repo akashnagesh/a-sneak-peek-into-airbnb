@@ -1,4 +1,4 @@
-package DataAccessLayer
+package dataAccessLayer
 
 import javax.inject.{Inject, Singleton}
 
