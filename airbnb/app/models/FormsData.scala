@@ -21,6 +21,6 @@ object FormsData {
       "age" -> number(min = 18, max = 99),
       "email" -> nonEmptyText,
       "password" -> nonEmptyText(minLength = 6,maxLength = 10)
-    )(User.apply)(User.unapply)
+    )(UserFormData.apply)(UserFormData.unapply)
   )
 }
