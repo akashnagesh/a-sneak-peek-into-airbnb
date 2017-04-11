@@ -1,12 +1,14 @@
 package dataAccessLayer
 
+import javax.inject.Singleton
+
 import com.google.inject.Inject
 import models.User
 import play.api.db.slick.DatabaseConfigProvider
 import slick.driver.MySQLDriver.api._
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 /**
   * Created by akashnagesh on 4/8/17.
@@ -25,6 +27,7 @@ trait UserDal {
 
 }
 
+@Singleton
 class UserDalImpl @Inject()(databaseConfig: DatabaseConfigProvider) extends DAL(databaseConfig) with UserDal {
 
   import dbConfig._
@@ -51,7 +54,7 @@ class UserDalImpl @Inject()(databaseConfig: DatabaseConfigProvider) extends DAL(
   override def addUser(user: User): Future[String] = db.run(users += user).map(_ => UserActionMessages.userInsertionSuccessfull)
     .recover {
       case duplicateEmail: java.sql.SQLIntegrityConstraintViolationException => UserActionMessages.emailAlreadyExists
-      case ex: Exception => ex.getCause.getMessage
+      case ex: Exception => UserActionMessages.genericError
     }
 
   override def getUser(email: String, password: String): Future[Option[User]] = {

@@ -2,12 +2,19 @@ package controllers
 
 import javax.inject.{Inject, _}
 
+import actors.LoginActor
+import akka.actor.{ActorSystem, Props}
+import akka.pattern.ask
+import akka.routing.RoundRobinPool
+import akka.util.Timeout
 import dataAccessLayer.{UserActionMessages, UserDalImpl}
 import models.{FormsData, User}
 import org.apache.commons.lang3.StringUtils
-import play.api.mvc._
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc._
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
@@ -15,7 +22,7 @@ import scala.concurrent.{ExecutionContext, Future}
   * application's home page.
   */
 @Singleton
-class HomeController @Inject()(val messagesApi: MessagesApi)(userDalImpl: UserDalImpl)(implicit ec: ExecutionContext) extends Controller with I18nSupport {
+class HomeController @Inject()(val messagesApi: MessagesApi)(userDalImpl: UserDalImpl)(system: ActorSystem)(implicit ec: ExecutionContext) extends Controller with I18nSupport {
 
   /**
     * Create an Action to render an HTML page with a welcome message.
@@ -24,30 +31,38 @@ class HomeController @Inject()(val messagesApi: MessagesApi)(userDalImpl: UserDa
     * a path of `/`.
     */
 
+  val loginRouter = system.actorOf(Props(classOf[LoginActor], userDalImpl).withRouter(RoundRobinPool(10)), name = "LoginActor")
+
 
   def index = Action {
     Ok(views.html.index(FormsData.userForm)(FormsData.createUserForm)(StringUtils.EMPTY))
   }
 
-  def userLogin = Action { implicit request =>
+  def userLogin = Action.async { implicit request =>
+    implicit val timeout: Timeout = Timeout(2 seconds)
     FormsData.userForm.bindFromRequest().fold(
-      formWithErrors => BadRequest,
-      userTuple => Ok(s"User ${userTuple._1} logged in successfully")
+      formWithErrors => Future.successful(BadRequest),
+      userTuple => {
+        loginRouter ? LoginActor.GetUser(userTuple._1, userTuple._2)
+      } map {
+        case Some(user) => Ok(s"Welcome ${user}")
+        case None => Ok("Invalid credentials")
+      }
     )
   }
 
   def createUser = Action.async { implicit request =>
+    implicit val timeout: Timeout = Timeout(2 seconds)
     FormsData.createUserForm.bindFromRequest().fold(
       errorForm => Future.successful(Ok),
       user => {
         val user1 = User(0, user.name, user.age, user.email, user.password)
-        userDalImpl.addUser(user1)
-          .map(someMes => someMes match {
-            case UserActionMessages.emailAlreadyExists => Ok(views.html.index(FormsData.userForm)(FormsData.createUserForm)("Email Id Already Exists"))
-            case UserActionMessages.genericError => Ok("Unable to create an Account.Try After Sometime")
-            case _ => Ok("New Page will come here ")
-          })
-      }
+        loginRouter ? LoginActor.CreateUser(user1)
+      } map (someMes => someMes match {
+        case UserActionMessages.emailAlreadyExists => Ok(views.html.index(FormsData.userForm)(FormsData.createUserForm)("Email Id Already Exists"))
+        case UserActionMessages.genericError => Ok(views.html.index(FormsData.userForm)(FormsData.createUserForm)("Unable to create user. Please try again."))
+        case _ => Ok(views.html.index(FormsData.userForm)(FormsData.createUserForm)("User account created! Login to use our service"))
+      })
     )
 
   }
