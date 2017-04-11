@@ -45,7 +45,7 @@ class HomeController @Inject()(val messagesApi: MessagesApi)(userDalImpl: UserDa
       userTuple => {
         loginRouter ? LoginActor.GetUser(userTuple._1, userTuple._2)
       } map {
-        case Some(user) => Ok(s"Welcome ${user}")
+        case Some(user) => Ok(views.html.userMain("Welcome User"))
         case None => Ok("Invalid credentials")
       }
     )
