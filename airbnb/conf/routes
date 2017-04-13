@@ -4,8 +4,12 @@
 
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.index
+
 POST    /login                      controllers.HomeController.userLogin
+
 POST    /signUp                     controllers.HomeController.createUser
+
+GET      /echo                       controllers.HomeController.echo
 
 
 # Map static resources from the /public folder to the /assets URL path

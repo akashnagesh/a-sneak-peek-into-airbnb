@@ -25,5 +25,7 @@ libraryDependencies += "com.typesafe.play" %% "play-slick-evolutions" % "2.0.0"
 // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
 libraryDependencies += "org.apache.commons" % "commons-lang3" % "3.0"
 libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.4.17"
+// https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients
+libraryDependencies += "org.apache.kafka" % "kafka-clients" % "0.10.0.0"
 
 
