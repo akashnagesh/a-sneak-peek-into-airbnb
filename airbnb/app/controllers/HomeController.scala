@@ -45,6 +45,10 @@ class HomeController @Inject()(val messagesApi: MessagesApi)(userDalImpl: UserDa
     Ok(views.html.index(FormsData.userForm)(FormsData.createUserForm)(StringUtils.EMPTY))
   }
 
+  def designStrategy = Action {
+    Ok(views.html.designStrategies())
+  }
+
   def userLogin = Action.async {
     implicit request =>
       implicit val timeout: Timeout = Timeout(2 seconds)
