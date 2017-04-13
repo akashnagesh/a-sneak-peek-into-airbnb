@@ -1,10 +1,10 @@
 package actors
 
 import actors.ConsumerActor.ReadDataFromKafka
-import actors.KafkaConsumerClientManagerActor.{GetRecommendation, RecommededListing}
+import actors.KafkaConsumerClientManagerActor.{GetRecommendation, RecommendedListing}
 import akka.actor.{Actor, ActorRef}
 import kafkaClients.KafkaRecommendationResponseConsumer
-import org.apache.kafka.clients.consumer.ConsumerRecords
+import org.apache.kafka.clients.consumer.ConsumerRecord
 
 import scala.collection.mutable
 
@@ -16,7 +16,7 @@ object KafkaConsumerClientManagerActor {
 
   case class GetRecommendation(userId: String)
 
-  case class RecommededListing(userId: String, value: String)
+  case class RecommendedListing(values: Iterable[ConsumerRecord[String, String]])
 
 }
 
@@ -26,11 +26,17 @@ class KafkaConsumerClientManagerActor(consumer: ActorRef) extends Actor {
 
   override def receive = {
     case GetRecommendation(userId) => {
+      println("inside get recommendation")
       bufferMap.put(userId, sender())
+      println(consumer)
       consumer ! ReadDataFromKafka
     }
-    case RecommededListing(userId, value) => {
-      bufferMap.get(userId).foreach(x => x ! value)
+    case RecommendedListing(values) => {
+      println("got recommended listing")
+      for (value <- values) yield {
+        bufferMap.get(value.key()).foreach(x => x ! value.value())
+        bufferMap.remove(value.key())
+      }
     }
   }
 }
@@ -43,19 +49,23 @@ object ConsumerActor {
 }
 
 class ConsumerActor(consumerClient: KafkaRecommendationResponseConsumer) extends Actor {
-  var foundRecord = false
-  var valueFromKafka: ConsumerRecords[String, String] = null
+  var valueFromKafka: Iterable[ConsumerRecord[String, String]] = null
 
   override def receive = {
-    case ReadDataFromKafka() => {
+    case ReadDataFromKafka => {
+      var foundRecord = false
+      println("reading data from kafka")
       while (!foundRecord) {
         valueFromKafka = consumerClient.consumeMessage()
+        println(valueFromKafka.isEmpty)
+        println(valueFromKafka)
         if (!valueFromKafka.isEmpty) {
           foundRecord = true
         }
       }
-      val v = valueFromKafka.iterator().next()
-      sender() ! RecommededListing(v.key(), v.value())
+      // consumerClient.kConsumer.commitSync()
+      println("=============value is" + valueFromKafka.size)
+      sender() ! RecommendedListing(valueFromKafka)
     }
   }
 }

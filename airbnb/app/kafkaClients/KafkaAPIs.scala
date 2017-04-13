@@ -17,7 +17,7 @@ class KafkaRecommendationRequestProducer @Inject()(conf: Configuration) {
   val kproducer = new KafkaProducer[String, String](initializeProperties(KafkaSerializers.STRING_SERIALIZER, KafkaSerializers.STRING_SERIALIZER))
 
   def publishMessage(key: String, value: String) = {
-    val rec = new ProducerRecord[String, String]("topic1", key, value)
+    val rec = new ProducerRecord[String, String]("topic3", key, value)
     kproducer.send(rec)
   }
 
@@ -42,11 +42,11 @@ object KafkaSerializers {
 class KafkaRecommendationResponseConsumer @Inject()(conf: Configuration) {
 
   val kConsumer = new KafkaConsumer[String, String](initializeProperties(KafkaDeSerializers.STRING_DESERIALIZER, KafkaDeSerializers.STRING_DESERIALIZER))
-  kConsumer.subscribe(util.Arrays.asList("topic1"))
+  kConsumer.subscribe(util.Arrays.asList("topic3"))
 
   def consumeMessage() = {
     import scala.collection.JavaConverters._
-    kConsumer.poll(1000)
+    kConsumer.poll(1000).asScala
   }
 
   private def initializeProperties(keyDeSerializer: String, valueDeSerializer: String): Properties = {
@@ -56,7 +56,7 @@ class KafkaRecommendationResponseConsumer @Inject()(conf: Configuration) {
     consumerProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServer)
     consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, keyDeSerializer)
     consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, valueDeSerializer)
-    consumerProperties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "1")
+    //consumerProperties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "1")
     //hardcodded because there is only one group of consumer
     consumerProperties.put(ConsumerConfig.GROUP_ID_CONFIG, "recommendationConsumer")
     consumerProperties

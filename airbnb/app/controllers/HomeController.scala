@@ -79,7 +79,7 @@ class HomeController @Inject()(val messagesApi: MessagesApi)(userDalImpl: UserDa
 
   def echo = WebSocket.accept[String, String] { request =>
     println("fuck yeahh")
-    ActorFlow.actorRef(out => RecommendationWebSocketActor.props(out, myKafkaProducer, myKafkaConsumer))
+    ActorFlow.actorRef(out => RecommendationWebSocketActor.props(out, myKafkaProducer, consumerClientManagerActor))
   }
 
 }

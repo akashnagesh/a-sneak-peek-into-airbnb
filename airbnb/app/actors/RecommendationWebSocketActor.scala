@@ -1,8 +1,7 @@
 package actors
 
 import akka.actor.{Actor, ActorRef, PoisonPill, Props}
-import kafkaClients.{KafkaDeSerializers, KafkaRecommendationRequestProducer}
-import org.apache.commons.lang3.StringUtils
+import kafkaClients.KafkaRecommendationRequestProducer
 
 /**
   * Created by akashnagesh on 4/11/17.
@@ -19,27 +18,20 @@ class RecommendationWebSocketActor(val out: ActorRef, val kafkaProducer: KafkaRe
   def receive = {
     case msg: String => {
 
-      println("inside actor defaiult receive")
+      println("inside actor default receive")
 
-      kafkaProducer.publishMessage("key1", msg)
-      kafkaClientManagerActor ! KafkaConsumerClientManagerActor.GetRecommendation("key1")
+      kafkaProducer.publishMessage(msg, msg)
+      kafkaClientManagerActor ! KafkaConsumerClientManagerActor.GetRecommendation(msg)
       // out ! msg + "appending this from server"
       context.become(onConsumerMessageBehavior)
     }
   }
 
   def onConsumerMessageBehavior: Receive = {
-    case msg: String =>
-
-      println("inside changed behavior")
-      val consumerRecord = kafkaConsumer.consumeMessage("key1", StringUtils.EMPTY, KafkaDeSerializers.STRING_DESERIALIZER,
-        KafkaDeSerializers.STRING_DESERIALIZER, "topic1")
-
-      println(consumerRecord + "==============")
-      for (record <- consumerRecord) yield {
-        println("consumer recordd " + record.value())
-        out ! (record.value() + "after round trip  from kafka")
-      }
+    case msg: String => {
+      println("final msg in actor")
+      out ! msg
       self ! PoisonPill
+    }
   }
 }

@@ -8,22 +8,23 @@ function WebSocketTest()
 
                ws.onopen = function()
                {
-                  // Web Socket is connected, send data using send()
+                  // Web Socket is connected, send data using send()run
                   //alert($('#texttokafka').val());
                   ws.send($('#texttokafka').val());
-                  alert("Message is sent...");
+                  //alert("Message is sent...");
                };
 
                ws.onmessage = function (evt)
                {
                   var received_msg = evt.data;
+                  //alert(received_msg)
                   document.getElementById("demo").innerHTML = received_msg;
                };
 
                ws.onclose = function()
                {
                   // websocket is closed.
-                  alert("Connection is closed...");
+                  //alert("Connection is closed...");
                };
 
          }
