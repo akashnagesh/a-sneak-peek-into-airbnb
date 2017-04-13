@@ -8,20 +8,20 @@ import kafkaClients.KafkaRecommendationRequestProducer
   */
 object RecommendationWebSocketActor {
   def props(out: ActorRef, kafkaProducer: KafkaRecommendationRequestProducer,
-            kafkaClientManagerActor: ActorRef) =
-    Props(new RecommendationWebSocketActor(out, kafkaProducer, kafkaClientManagerActor))
+            kafkaClientManagerActor: ActorRef,user:String) =
+    Props(new RecommendationWebSocketActor(out, kafkaProducer, kafkaClientManagerActor,user))
 }
 
 class RecommendationWebSocketActor(val out: ActorRef, val kafkaProducer: KafkaRecommendationRequestProducer,
-                                   val kafkaClientManagerActor: ActorRef) extends Actor {
+                                   val kafkaClientManagerActor: ActorRef,val user : String) extends Actor {
 
   def receive = {
     case msg: String => {
 
       println("inside actor default receive")
 
-      kafkaProducer.publishMessage(msg, msg)
-      kafkaClientManagerActor ! KafkaConsumerClientManagerActor.GetRecommendation(msg)
+      kafkaProducer.publishMessage(user, msg)
+      kafkaClientManagerActor ! KafkaConsumerClientManagerActor.GetRecommendation(user)
       // out ! msg + "appending this from server"
       context.become(onConsumerMessageBehavior)
     }
