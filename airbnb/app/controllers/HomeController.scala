@@ -57,7 +57,7 @@ class HomeController @Inject()(val messagesApi: MessagesApi)(userDalImpl: UserDa
         userTuple => {
           loginRouter ? LoginActor.GetUser(userTuple._1, userTuple._2)
         } map {
-          case Some(user) => Ok(views.html.userMain("Welcome User")).withSession("user"-> userTuple._1)
+          case Some(user) => Ok(views.html.userMain("Welcome User")).withSession("user" -> userTuple._1)
           case None => Ok("Invalid credentials")
         }
       )
@@ -84,7 +84,7 @@ class HomeController @Inject()(val messagesApi: MessagesApi)(userDalImpl: UserDa
   def echo = WebSocket.acceptOrResult[String, String] { request =>
     Future.successful(request.session.get("user") match {
       case None => Left(Forbidden)
-      case Some(user) => Right(ActorFlow.actorRef(out => RecommendationWebSocketActor.props(out, myKafkaProducer, consumerClientManagerActor,user)))
+      case Some(user) => Right(ActorFlow.actorRef(out => RecommendationWebSocketActor.props(out, myKafkaProducer, consumerClientManagerActor, user)))
     })
   }
 
