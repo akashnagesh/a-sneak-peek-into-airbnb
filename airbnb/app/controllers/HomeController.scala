@@ -36,16 +36,20 @@ class HomeController @Inject()(val messagesApi: MessagesApi)(userDalImpl: UserDa
     * a path of `/`.
     */
 
+  val logger = play.Logger.of("airbnb_logger")
+
   val loginRouter = system.actorOf(Props(classOf[LoginActor], userDalImpl).withRouter(RoundRobinPool(10)), name = "LoginActor")
   val consumerActor = system.actorOf(Props(classOf[ConsumerActor], myKafkaConsumer))
   val consumerClientManagerActor = system.actorOf(Props(classOf[KafkaConsumerClientManagerActor], consumerActor))
 
 
   def index = Action {
+    logger.info("User in landing page")
     Ok(views.html.index(FormsData.userForm)(FormsData.createUserForm)(StringUtils.EMPTY))
   }
 
   def designStrategy = Action {
+    logger.info("User accessing design strategies")
     Ok(views.html.designStrategies())
   }
 
