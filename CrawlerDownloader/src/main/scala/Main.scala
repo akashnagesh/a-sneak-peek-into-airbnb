@@ -8,7 +8,7 @@ import akka.actor.{ActorSystem, Props}
 object Main extends App {
   val system = ActorSystem()
 
-  system.actorOf(Props(new Supervisor)) ! StartDownload("http://insideairbnb.com/get-the-data.html", "/Users/akashnagesh/Desktop/junit/")
+  system.actorOf(Props(new Supervisor)) ! StartDownload("http://insideairbnb.com/get-the-data.html", "/home/vinay/InsideAirbnb/")
 
 }
 
