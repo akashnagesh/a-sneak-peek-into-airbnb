@@ -4,6 +4,7 @@
 tmp
 dump
 .DS_Store
+workspace.xml
 # Eclipse
 .settings
 .cache

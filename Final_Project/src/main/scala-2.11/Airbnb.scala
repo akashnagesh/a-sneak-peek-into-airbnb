@@ -56,7 +56,7 @@ class Airbnb {
       .map { ratingData => ratingData._1 }
 
     top20ListingIDs.filter(id => getListingMap.contains(id))
-      .map { listing_id => (listing_id, getListingMap.getOrElse(listing_id, "No Movie Found")) }
+      .map { listing_id => (listing_id, getListingMap.getOrElse(listing_id, "Not Found")) }
       .sorted
       .take(3)
   }

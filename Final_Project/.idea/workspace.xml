@@ -28,12 +28,17 @@
         <entry file="file://$PROJECT_DIR$/src/main/scala-2.11/Airbnb.scala">
           <provider selected="true" editor-type-id="text-editor">
 <<<<<<< HEAD
+<<<<<<< HEAD
             <state relative-caret-position="162">
               <caret line="30" column="3" lean-forward="true" selection-start-line="30" selection-start-column="3" selection-end-line="30" selection-end-column="3" />
 =======
             <state relative-caret-position="370">
               <caret line="46" column="3" lean-forward="true" selection-start-line="46" selection-start-column="3" selection-end-line="46" selection-end-column="3" />
 >>>>>>> fc63b0d3e5672bbe544abed6d9ea2eb7f69033cc
+=======
+            <state relative-caret-position="-48">
+              <caret line="58" column="80" lean-forward="false" selection-start-line="58" selection-start-column="80" selection-end-line="58" selection-end-column="80" />
+>>>>>>> 65642356db46beec42135dc05624647db65b0eaa
               <folding>
                 <element signature="e#0#24#0" expanded="true" />
               </folding>
@@ -55,7 +60,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>getRDDOfRating</find>
       <find>getRatingFromUser</find>
       <find>movi</find>
       <find>recommendedListingsId</find>
@@ -64,6 +68,8 @@
       <find>.toDo</find>
       <find>toInt</find>
       <find>data</find>
+      <find>getRDDOfRating</find>
+      <find>getListingMap</find>
     </findStrings>
   </component>
   <component name="GradleLocalSettings">
@@ -676,12 +682,17 @@
     <entry file="file://$PROJECT_DIR$/src/main/scala-2.11/Airbnb.scala">
       <provider selected="true" editor-type-id="text-editor">
 <<<<<<< HEAD
+<<<<<<< HEAD
         <state relative-caret-position="162">
           <caret line="30" column="3" lean-forward="true" selection-start-line="30" selection-start-column="3" selection-end-line="30" selection-end-column="3" />
 =======
         <state relative-caret-position="370">
           <caret line="46" column="3" lean-forward="true" selection-start-line="46" selection-start-column="3" selection-end-line="46" selection-end-column="3" />
 >>>>>>> fc63b0d3e5672bbe544abed6d9ea2eb7f69033cc
+=======
+        <state relative-caret-position="-48">
+          <caret line="58" column="80" lean-forward="false" selection-start-line="58" selection-start-column="80" selection-end-line="58" selection-end-column="80" />
+>>>>>>> 65642356db46beec42135dc05624647db65b0eaa
           <folding>
             <element signature="e#0#24#0" expanded="true" />
           </folding>
