@@ -48,14 +48,14 @@ class Airbnb {
 
   def getTopTenListings: List[(Int, String)] = {
 
-    val top50ListingIDs = getRDDOfRating.map { rating => rating._2.product }
+    val top20ListingIDs = getRDDOfRating.map { rating => rating._2.product }
       .countByValue()
       .toList
       .sortBy(-_._2)
       .take(10)
       .map { ratingData => ratingData._1 }
 
-    top50ListingIDs.filter(id => getListingMap.contains(id))
+    top20ListingIDs.filter(id => getListingMap.contains(id))
       .map { listing_id => (listing_id, getListingMap.getOrElse(listing_id, "No Movie Found")) }
       .sorted
       .take(3)
@@ -74,7 +74,7 @@ class Airbnb {
 
   def getTrainingRating: RDD[Rating] = {
 
-    getRDDOfRating.filter(data => data._1 < 9)
+    getRDDOfRating.filter(data => data._1 < 7)
       .values
       .union(topTenListings)
       .repartition(numPartitions)
@@ -83,7 +83,7 @@ class Airbnb {
 
   def getValidationRating: RDD[Rating] = {
 
-    getRDDOfRating.filter(data => data._1 >= 8 && data._1 <= 10)
+    getRDDOfRating.filter(data => data._1 >= 7 && data._1 <= 10)
       .values
       .union(topTenListings)
       .repartition(numPartitions)
