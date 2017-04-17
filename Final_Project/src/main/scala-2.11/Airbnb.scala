@@ -106,8 +106,8 @@ object Airbnb extends App {
   val airbnbRecommendation = new Airbnb
   val sc = airbnbRecommendation.sc
   // Load and parse the data
-  val data = sc.textFile("E:/testfiles/training_with_price.csv")
-  val ratings = data.map(_.split(",") match { case Array(user, item, rate, price) =>
+  //val data = sc.textFile("E:/testfiles/training_with_price.csv")
+  val ratings = airbnbRecommendation.getRatingRDD.map(_.split(",") match { case Array(user, item, rate, price) =>
     Rating(user.toInt, item.toInt, rate.toDouble)
   })
   val listings = airbnbRecommendation.getListingRDD.map { str => val data = str.split(",")
