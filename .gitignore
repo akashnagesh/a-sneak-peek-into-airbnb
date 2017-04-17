@@ -3,7 +3,7 @@
 *.log
 tmp
 dump
-
+.DS_Store
 # Eclipse
 .settings
 .cache
