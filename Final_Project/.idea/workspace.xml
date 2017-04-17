@@ -27,8 +27,8 @@
       <file leaf-file-name="Airbnb.scala" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/scala-2.11/Airbnb.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="370">
-              <caret line="46" column="3" lean-forward="true" selection-start-line="46" selection-start-column="3" selection-end-line="46" selection-end-column="3" />
+            <state relative-caret-position="-48">
+              <caret line="58" column="80" lean-forward="false" selection-start-line="58" selection-start-column="80" selection-end-line="58" selection-end-column="80" />
               <folding>
                 <element signature="e#0#24#0" expanded="true" />
               </folding>
@@ -50,7 +50,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>getRDDOfRating</find>
       <find>getRatingFromUser</find>
       <find>movi</find>
       <find>recommendedListingsId</find>
@@ -59,6 +58,8 @@
       <find>.toDo</find>
       <find>toInt</find>
       <find>data</find>
+      <find>getRDDOfRating</find>
+      <find>getListingMap</find>
     </findStrings>
   </component>
   <component name="GradleLocalSettings">
@@ -604,8 +605,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala-2.11/Airbnb.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="370">
-          <caret line="46" column="3" lean-forward="true" selection-start-line="46" selection-start-column="3" selection-end-line="46" selection-end-column="3" />
+        <state relative-caret-position="-48">
+          <caret line="58" column="80" lean-forward="false" selection-start-line="58" selection-start-column="80" selection-end-line="58" selection-end-column="80" />
           <folding>
             <element signature="e#0#24#0" expanded="true" />
           </folding>
