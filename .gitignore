@@ -3,7 +3,9 @@
 *.log
 tmp
 dump
+.idea
 .DS_Store
+workspace.xml
 # Eclipse
 .settings
 .cache
