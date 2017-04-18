@@ -2,7 +2,7 @@ package actors
 
 import actors.ConsumerActor.ReadDataFromKafka
 import actors.KafkaConsumerClientManagerActor.{GetRecommendation, RecommendedListing}
-import akka.actor.{Actor, ActorRef}
+import akka.actor.{Actor, ActorRef, Props}
 import kafkaClients.KafkaRecommendationResponseConsumer
 import org.apache.kafka.clients.consumer.ConsumerRecord
 
@@ -22,13 +22,17 @@ object KafkaConsumerClientManagerActor {
 
 class KafkaConsumerClientManagerActor(consumer: ActorRef) extends Actor {
 
+  override def preStart() = {
+    println("--------------------------in prestart!!!")
+    context.actorOf(Props(classOf[SparkStreamingListnerActor])) ! SparkStreamingListnerActor.StartListeningToKafka()
+  }
+
   var bufferMap = new mutable.HashMap[String, ActorRef]()
 
   override def receive = {
     case GetRecommendation(userId) => {
       println("inside get recommendation")
       bufferMap.put(userId, sender())
-      println(consumer)
       consumer ! ReadDataFromKafka
     }
     case RecommendedListing(values) => {

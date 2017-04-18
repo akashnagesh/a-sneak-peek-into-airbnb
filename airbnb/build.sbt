@@ -43,7 +43,17 @@ libraryDependencies += "org.apache.hbase" % "hbase-common" % "1.2.4"
 
 
 
-// https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-core
-libraryDependencies += "org.apache.hadoop" % "hadoop-core" % "1.2.1"
+//// https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-core
+//libraryDependencies += "org.apache.hadoop" % "hadoop-core" % "1.2.1"
+
+//spark
+libraryDependencies += "org.apache.spark" %% "spark-streaming" % "2.1.0"
+libraryDependencies += "org.apache.spark" % "spark-streaming-kafka-0-10_2.11" % "2.1.0"
+libraryDependencies += "org.apache.spark" %% "spark-core" % "2.1.0"
+libraryDependencies += "org.apache.spark" %% "spark-sql" % "2.1.0"
+libraryDependencies += "org.apache.spark" %% "spark-mllib" % "2.1.0"
+
+//dependency override for jackson
+dependencyOverrides ++= Set("com.fasterxml.jackson.core" % "jackson-databind" % "2.6.1")
 
 

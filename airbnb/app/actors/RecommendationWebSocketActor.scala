@@ -8,12 +8,12 @@ import kafkaClients.KafkaRecommendationRequestProducer
   */
 object RecommendationWebSocketActor {
   def props(out: ActorRef, kafkaProducer: KafkaRecommendationRequestProducer,
-            kafkaClientManagerActor: ActorRef,user:String) =
-    Props(new RecommendationWebSocketActor(out, kafkaProducer, kafkaClientManagerActor,user))
+            kafkaClientManagerActor: ActorRef, user: String) =
+    Props(new RecommendationWebSocketActor(out, kafkaProducer, kafkaClientManagerActor, user))
 }
 
 class RecommendationWebSocketActor(val out: ActorRef, val kafkaProducer: KafkaRecommendationRequestProducer,
-                                   val kafkaClientManagerActor: ActorRef,val user : String) extends Actor {
+                                   val kafkaClientManagerActor: ActorRef, val user: String) extends Actor {
 
   def receive = {
     case msg: String => {

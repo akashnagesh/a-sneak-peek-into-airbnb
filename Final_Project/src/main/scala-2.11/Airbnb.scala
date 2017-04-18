@@ -1,7 +1,7 @@
 import java.util.Scanner
 
 import breeze.numerics.sqrt
-import org.apache.spark.mllib.recommendation.{ALS, MatrixFactorizationModel, Rating}
+import org.apache.spark.mllib.recommendation.{ALS, Rating}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{SparkConf, SparkContext}
 
@@ -32,7 +32,8 @@ class Airbnb {
 
   def getRDDOfRating: RDD[(Long, Rating)] = {
 
-    getRatingRDD.map { line => val fields = line.split(",")
+    getRatingRDD.map { line =>
+      val fields = line.split(",")
 
       (fields(3).toLong % 10, Rating(fields(0).toInt, fields(1).toInt, fields(2).toDouble))
     }
@@ -40,13 +41,14 @@ class Airbnb {
 
   def getListingMap: Map[Int, String] = {
 
-    getListingRDD.map { line => val fields = line.split(",")
+    getListingRDD.map { line =>
+      val fields = line.split(",")
 
       (fields(0).toInt, fields(1))
     }.collect().toMap
   }
 
-  def getTopTenListings: List[(Int, String)] = {
+  def getTopThreeListings: List[(Int, String)] = {
 
     val top20ListingIDs = getRDDOfRating.map { rating => rating._2.product }
       .countByValue()
@@ -61,12 +63,13 @@ class Airbnb {
       .take(3)
   }
 
-  def getRatingFromUser: RDD[Rating] = {
+  def getRatingFromUser(): RDD[Rating] = {
     println("1 Successful")
-    val listOFRating = getTopTenListings.map { getRating => {
+    val listOFRating = getTopThreeListings.map { x => {
 
-      println(s"Please Enter The preference For Listings ${getRating._2} From 1 to 10")
-      Rating(0, getRating._1, scanner.next().toLong)
+      println(s"Please Enter The preference For Listings ${x._2} From 1 to 10")
+      val s = scanner.next()
+      Rating(0, x._1, s.toLong)
     }
     }
     sc.parallelize(listOFRating)
@@ -104,13 +107,14 @@ class Airbnb {
 object Airbnb extends App {
 
   val airbnbRecommendation = new Airbnb
-  val sc = airbnbRecommendation.sc
+  //val sc = airbnbRecommendation.sc
   // Load and parse the data
   //val data = sc.textFile("E:/testfiles/training_with_price.csv")
   val ratings = airbnbRecommendation.getRatingRDD.map(_.split(",") match { case Array(user, item, rate, price) =>
     Rating(user.toInt, item.toInt, rate.toDouble)
   })
-  val listings = airbnbRecommendation.getListingRDD.map { str => val data = str.split(",")
+  val listings = airbnbRecommendation.getListingRDD.map { str =>
+    val data = str.split(",")
     (data(0), data(1))
   }
     .map { case (listing_id, name) => (listing_id.toInt, name) }
@@ -121,6 +125,9 @@ object Airbnb extends App {
 
 
   val model = ALS.train(training.union(myRatingsRDD), 8, 10, 0.01)
+
+  //model.save(airbnbRecommendation.sc, "/Users/akashnagesh/Desktop/sparkModel")
+
 
   val ListingsSeen = myRatingsRDD.map(x => x.product).collect().toList
 
@@ -135,19 +142,20 @@ object Airbnb extends App {
     ((user, product), rate)
   }.join(predictedRates)
 
-  val MSE = ratesAndPreds.map { case ((user, product), (r1, r2)) => Math.pow(r1 - r2, 2)/10 }.mean()
+  val MSE = ratesAndPreds.map { case ((user, product), (r1, r2)) => Math.pow(r1 - r2, 2) / 10 }.mean()
 
   println("Mean Squared Error = " + MSE)
 
   val RMSE = sqrt(MSE)
-  println("Root Mean Squared Error = " +RMSE)
+  println("Root Mean Squared Error = " + RMSE)
 
   val recommendedListingsId = model.predict(ListingsNotSeen.map { product =>
     (0, product)
   }).map { case Rating(user, listings, rating) => (listings, rating) }
     .sortBy(x => x._2, ascending = false).take(10).map(x => x._1)
 
-  val recommendListing = airbnbRecommendation.getListingRDD.map { str => val data = str.split(",")
+  val recommendListing = airbnbRecommendation.getListingRDD.map { str =>
+    val data = str.split(",")
     (data(0).toInt, data(1))
   }.filter { case (listing_id, name) => recommendedListingsId.contains(listing_id) }
 

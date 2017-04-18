@@ -16,8 +16,10 @@ class KafkaRecommendationRequestProducer @Inject()(conf: Configuration) {
 
   val kproducer = new KafkaProducer[String, String](initializeProperties(KafkaSerializers.STRING_SERIALIZER, KafkaSerializers.STRING_SERIALIZER))
 
+  val userPreferenceTopic = conf.getString("kafka.topicIn").getOrElse("no input topic")
+
   def publishMessage(key: String, value: String) = {
-    val rec = new ProducerRecord[String, String]("topic3", key, value)
+    val rec = new ProducerRecord[String, String](userPreferenceTopic, key, value)
     kproducer.send(rec)
   }
 
@@ -42,7 +44,8 @@ object KafkaSerializers {
 class KafkaRecommendationResponseConsumer @Inject()(conf: Configuration) {
 
   val kConsumer = new KafkaConsumer[String, String](initializeProperties(KafkaDeSerializers.STRING_DESERIALIZER, KafkaDeSerializers.STRING_DESERIALIZER))
-  kConsumer.subscribe(util.Arrays.asList("topic3"))
+  val recommendedListingsTopic = conf.getString("kafka.topicOut").getOrElse("no output topic")
+  kConsumer.subscribe(util.Arrays.asList(recommendedListingsTopic))
 
   def consumeMessage() = {
     import scala.collection.JavaConverters._
