@@ -7,7 +7,7 @@ object AirbnbMain {
 
     val airbnbRecommendation = new Airbnb
     //    airbnbRecommendation.sc;
-    airbnbRecommendation.recommendListing(1,1,1)
+    airbnbRecommendation.recommendListing(7,8,5).foreach(println)
 
   }
 

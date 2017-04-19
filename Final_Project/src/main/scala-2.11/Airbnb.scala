@@ -91,7 +91,7 @@ class Airbnb {
   }
 
 
-  def recommendListing(one: Int, two: Int, three: Int): List[(Int, String)] = {
+  def recommendListing(one: Double, two: Double, three: Double): List[(Int, String)] = {
 
     val ratings = getRatingRDD.map(_.split(",") match { case Array(user, item, rate, price) =>
       Rating(user.toInt, item.toInt, rate.toDouble)
@@ -107,7 +107,7 @@ class Airbnb {
       getTopTenListings.map { getRating => {
 
         //    println(s"Please Enter The preference For Listings ${getRating._2} From 1 to 10")
-        Rating(0, getRating._1, (input.indexOf()).toDouble)
+          Rating(0, getRating._1, (input.iterator.next()))
       }
       }
     val inputRDD = sc.parallelize(listOFRating)
