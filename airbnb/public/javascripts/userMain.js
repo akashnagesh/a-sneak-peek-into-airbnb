@@ -3,12 +3,33 @@
  */
 
 
-angular.module("UserRecommendation",["chart.js"]).controller("UserWebSocket",function ($scope,$http) {
+angular.module("UserRecommendation",["chart.js","rzModule","ui.bootstrap"]).controller("UserWebSocket",function ($scope,$http) {
 
     //var ws = new WebSocket('ws://localhost:9000/socket');
     alert("Hi");
 
+    $scope.minSlider = {
+        value: 10
+    };
+    $scope.minSlider1 = {
+        value: 10
+    };
+    $scope.minSlider2 = {
+        value: 10
+    };
 
+
+    $scope.getRecommendation = function(message){
+
+        var one =  $scope.minSlider.value;
+        var two = $scope.minSlider1.value;
+        var three =$scope.minSlider2.value;
+
+        //ws  = new WebSocket('ws://localhost:9000/getRecommendation');
+        alert("Web Socket Connection  established");
+        alert(message);
+        ws.send(message);
+    };
 
 
 

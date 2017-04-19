@@ -18,6 +18,8 @@
 
     <!-- Custom CSS -->
     <link href="/assets/stylesheets/heroic-features.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/angularjs-slider/6.1.1/rzslider.css" rel="stylesheet">
+    <link href="/assets/stylesheets/rz.css" rel="stylesheet">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -29,6 +31,8 @@
     <![endif]-->
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular.min.js">
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.14.3/ui-bootstrap-tpls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angularjs-slider/6.1.1/rzslider.min.js"></script>
     <script src="/assets/javascripts/userMain.js"></script>
     <script src="/assets/javascripts/Chart.js"></script>
     <script src="/assets/javascripts/angular-chart.js"></script>
@@ -104,6 +108,11 @@
         <canvas id="bar" class="chart chart-bar"
         chart-data="data1" chart-labels="labels1">
         </canvas>
+    </div>
+    <div class = "row" ng-controller = "UserWebSocket">
+        <rzslider rz-slider-model="minSlider.value"></rzslider>
+        <rzslider rz-slider-model="minSlider1.value"></rzslider>
+        <rzslider rz-slider-model="minSlider2.value"></rzslider>
     </div>
     <!-- Page Features -->
     <div class="row text-center">
