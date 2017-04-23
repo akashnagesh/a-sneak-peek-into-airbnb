@@ -1,6 +1,5 @@
 package actors
 
-
 import actors.LoginActor.{CreateUser, GetUser}
 import akka.actor.Actor
 import akka.pattern.pipe

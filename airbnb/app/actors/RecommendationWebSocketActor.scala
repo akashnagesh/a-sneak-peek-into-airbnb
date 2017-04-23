@@ -18,6 +18,7 @@ class RecommendationWebSocketActor(val out: ActorRef, val kafkaProducer: KafkaRe
   def receive = {
     case msg: String => {
 
+      println("this is a web socket actor ref + " + self)
       println("inside actor default receive")
 
       kafkaProducer.publishMessage(user, msg)

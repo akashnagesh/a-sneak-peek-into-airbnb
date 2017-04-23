@@ -2,7 +2,6 @@ package spark
 
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.{SparkConf, SparkContext}
-import org.scalatest.time.Second
 
 /**
   * Created by akashnagesh on 4/18/17.

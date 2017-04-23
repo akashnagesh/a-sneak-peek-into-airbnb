@@ -79,7 +79,7 @@ public class AveragePriceByRoomType {
 		String[] headerList;
 		//String place;
 		static {
-			File f = new File("/home/vinay/Desktop/mapoutput");
+			File f = new File("/Users/akashnagesh/Desktop/mapredSysout");
 			try {
 				System.setOut(new PrintStream(f));
 			} catch (Exception e) {

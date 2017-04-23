@@ -1,10 +1,10 @@
 package actors
 
-import actors.ConsumerActor.ReadDataFromKafka
+import actors.ConsumerActor.{ConsumedRecords, ReadDataFromKafka}
 import actors.KafkaConsumerClientManagerActor.{GetRecommendation, RecommendedListing}
 import akka.actor.{Actor, ActorRef, Props}
-import kafkaClients.KafkaRecommendationResponseConsumer
-import org.apache.kafka.clients.consumer.ConsumerRecord
+import kafkaClients.{KafkaRecommendationResponseConsumer, KafkaRecommendationResultProducer}
+import org.apache.kafka.clients.consumer.{ConsumerRecord, ConsumerRecords}
 
 import scala.collection.mutable
 
@@ -20,11 +20,12 @@ object KafkaConsumerClientManagerActor {
 
 }
 
-class KafkaConsumerClientManagerActor(consumer: ActorRef) extends Actor {
+class KafkaConsumerClientManagerActor(consumer: ActorRef, myKafkaResultProducer: KafkaRecommendationResultProducer) extends Actor {
 
   override def preStart() = {
     println("--------------------------in prestart!!!")
-    context.actorOf(Props(classOf[SparkStreamingListnerActor])) ! SparkStreamingListnerActor.StartListeningToKafka()
+    consumer ! ReadDataFromKafka()
+    context.actorOf(Props(classOf[SparkStreamingListnerActor])) ! SparkStreamingListnerActor.StartListeningToKafka(myKafkaResultProducer)
   }
 
   var bufferMap = new mutable.HashMap[String, ActorRef]()
@@ -32,14 +33,18 @@ class KafkaConsumerClientManagerActor(consumer: ActorRef) extends Actor {
   override def receive = {
     case GetRecommendation(userId) => {
       println("inside get recommendation")
+      println("this is the web socket that sent message" + sender())
       bufferMap.put(userId, sender())
-      consumer ! ReadDataFromKafka
     }
     case RecommendedListing(values) => {
-      println("got recommended listing")
       for (value <- values) yield {
-        bufferMap.get(value.key()).foreach(x => x ! value.value())
-        bufferMap.remove(value.key())
+        println()
+        bufferMap.get(value.key()).foreach(x => {
+          println("sending value to " + x);
+          x ! value.value()
+          bufferMap.remove(value.key())
+        })
+
       }
     }
   }
@@ -50,26 +55,24 @@ object ConsumerActor {
 
   case class ReadDataFromKafka()
 
+  case class ConsumedRecords(records: ConsumerRecords[String, String])
+
 }
 
 class ConsumerActor(consumerClient: KafkaRecommendationResponseConsumer) extends Actor {
-  var valueFromKafka: Iterable[ConsumerRecord[String, String]] = null
+
+  var managerActor: ActorRef = null
 
   override def receive = {
-    case ReadDataFromKafka => {
-      var foundRecord = false
+    case ReadDataFromKafka() => {
+      managerActor = sender()
       println("reading data from kafka")
-      while (!foundRecord) {
-        valueFromKafka = consumerClient.consumeMessage()
-        println(valueFromKafka.isEmpty)
-        println(valueFromKafka)
-        if (!valueFromKafka.isEmpty) {
-          foundRecord = true
-        }
-      }
-      // consumerClient.kConsumer.commitSync()
-      println("=============value is" + valueFromKafka.size)
-      sender() ! RecommendedListing(valueFromKafka)
+      new Thread(new ConsumerThread(self, consumerClient),"Kafka_consumer_thread").start()
+    }
+
+    case ConsumedRecords(records) => {
+      import scala.collection.JavaConverters._
+      managerActor ! RecommendedListing(records.asInstanceOf[ConsumerRecords[String, String]].asScala)
     }
   }
 }

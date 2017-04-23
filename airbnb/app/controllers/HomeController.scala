@@ -9,7 +9,7 @@ import akka.routing.RoundRobinPool
 import akka.stream.Materializer
 import akka.util.Timeout
 import dataAccessLayer.{UserActionMessages, UserDalImpl}
-import kafkaClients.{KafkaRecommendationRequestProducer, KafkaRecommendationResponseConsumer}
+import kafkaClients.{KafkaRecommendationRequestProducer, KafkaRecommendationResponseConsumer, KafkaRecommendationResultProducer}
 import models.{FormsData, User}
 import org.apache.commons.lang3.StringUtils
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -24,9 +24,8 @@ import scala.concurrent.{ExecutionContext, Future}
   * This controller creates an `Action` to handle HTTP requests to the
   * application's home page.
   */
-@Singleton
 class HomeController @Inject()(val messagesApi: MessagesApi)(userDalImpl: UserDalImpl)
-                              (myKafkaProducer: KafkaRecommendationRequestProducer)(myKafkaConsumer: KafkaRecommendationResponseConsumer)
+                              (myKafkaProducer: KafkaRecommendationRequestProducer)(myKafkaConsumer: KafkaRecommendationResponseConsumer)(myKafkaResultProducer: KafkaRecommendationResultProducer)
                               (implicit ec: ExecutionContext, system: ActorSystem, materializer: Materializer) extends Controller with I18nSupport {
 
   /**
@@ -40,7 +39,7 @@ class HomeController @Inject()(val messagesApi: MessagesApi)(userDalImpl: UserDa
 
   val loginRouter = system.actorOf(Props(classOf[LoginActor], userDalImpl).withRouter(RoundRobinPool(10)), name = "LoginActor")
   val consumerActor = system.actorOf(Props(classOf[ConsumerActor], myKafkaConsumer))
-  val consumerClientManagerActor = system.actorOf(Props(classOf[KafkaConsumerClientManagerActor], consumerActor))
+  val consumerClientManagerActor = system.actorOf(Props(classOf[KafkaConsumerClientManagerActor], consumerActor,myKafkaResultProducer))
 
 
   def index = Action {

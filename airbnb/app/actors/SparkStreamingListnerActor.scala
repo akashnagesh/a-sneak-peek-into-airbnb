@@ -2,6 +2,7 @@ package actors
 
 import actors.SparkStreamingListnerActor.StartListeningToKafka
 import akka.actor.Actor
+import kafkaClients.KafkaRecommendationResultProducer
 import spark.StreamingClient
 
 /**
@@ -10,15 +11,15 @@ import spark.StreamingClient
 
 object SparkStreamingListnerActor {
 
-  case class StartListeningToKafka()
+  case class StartListeningToKafka(myKafkaResultProducer: KafkaRecommendationResultProducer)
 
 }
 
 class SparkStreamingListnerActor extends Actor {
   override def receive: Receive = {
-    case StartListeningToKafka() => {
+    case StartListeningToKafka(myKafkaResultProducer) => {
       println("++++++++++++++++++==========++++===+++++==++==+=++====+=+=++=++==+starting to listening to kafka")
-      val sparkClient = new StreamingClient
+      val sparkClient = new StreamingClient(myKafkaResultProducer)
     }
   }
 }

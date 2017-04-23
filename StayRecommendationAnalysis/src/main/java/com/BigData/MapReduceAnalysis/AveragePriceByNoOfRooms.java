@@ -63,7 +63,8 @@ public class AveragePriceByNoOfRooms {
 		System.exit(job.waitForCompletion(true) ? 0 : 1);
 	}
 
-	private static class AveragePriceByNoOfRoomsMapper extends Mapper<LongWritable, Text, IntWritable, SortedMapWritable> {
+	private static class AveragePriceByNoOfRoomsMapper
+			extends Mapper<LongWritable, Text, IntWritable, SortedMapWritable> {
 
 		private IntWritable outKey = new IntWritable();
 		private LongWritable one = new LongWritable(1);
@@ -73,7 +74,7 @@ public class AveragePriceByNoOfRooms {
 		String[] headerList;
 		String place;
 		static {
-			File f = new File("/home/vinay/Desktop/mapoutput");
+			File f = new File("/Users/akashnagesh/Desktop/mapredSysout");
 			try {
 				System.setOut(new PrintStream(f));
 			} catch (Exception e) {
@@ -84,14 +85,14 @@ public class AveragePriceByNoOfRooms {
 		@Override
 		protected void setup(Mapper<LongWritable, Text, IntWritable, SortedMapWritable>.Context context)
 				throws IOException, InterruptedException {
-			
-			try{
-			BufferedReader bufferedReader = new BufferedReader(new FileReader("headerForBerlin"));
-	        headerList= bufferedReader.readLine().split("\t");
-	        indexOfprice =ColumnParser.getTheIndexOfTheColumn(headerList,"price");
-	        indexOfBedRooms = ColumnParser.getTheIndexOfTheColumn(headerList,"bedrooms");
-	        
-			}catch (Exception e) {
+
+			try {
+				BufferedReader bufferedReader = new BufferedReader(new FileReader("headerForBerlin"));
+				headerList = bufferedReader.readLine().split("\t");
+				indexOfprice = ColumnParser.getTheIndexOfTheColumn(headerList, "price");
+				indexOfBedRooms = ColumnParser.getTheIndexOfTheColumn(headerList, "bedrooms");
+
+			} catch (Exception e) {
 				System.out.println("Something Went Wrong");
 			}
 		}
@@ -99,7 +100,6 @@ public class AveragePriceByNoOfRooms {
 		@Override
 		protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 
-			
 			String val[] = value.toString().split("\t");
 			if (value.toString().contains("price") || val.length > 95)
 				return;
@@ -112,14 +112,14 @@ public class AveragePriceByNoOfRooms {
 				return;
 			}
 			outValue.put(doubleWritable, one);
-			try{
-				//System.out.println(val[indexOfBedRooms]);
+			try {
+				// System.out.println(val[indexOfBedRooms]);
 				outKey.set(Integer.parseInt(val[indexOfBedRooms]));
-			}catch (Exception e) {
+			} catch (Exception e) {
 				System.out.println("Not an number");
 				return;
 			}
-			
+
 			context.write(outKey, outValue);
 		}
 
@@ -151,9 +151,8 @@ public class AveragePriceByNoOfRooms {
 	private static class AveragePriceByNoOfRoomReducer
 			extends TableReducer<IntWritable, SortedMapWritable, ImmutableBytesWritable> {
 
-		
 		static {
-			File f = new File("/home/vinay/Desktop/mapoutputReducer");
+			File f = new File("/Users/akashnagesh/Desktop/mapredSysout");
 			try {
 				System.setOut(new PrintStream(f));
 			} catch (Exception e) {
@@ -161,7 +160,6 @@ public class AveragePriceByNoOfRooms {
 			}
 		}
 		final List<Double> priceList = new ArrayList<Double>();
-		
 
 		Connection connection;
 		Admin admin;
@@ -237,24 +235,24 @@ public class AveragePriceByNoOfRooms {
 
 			Put putTolistingsAnalyisByPlace = new Put(Bytes.toBytes("Berlin"));
 
-			String noOfRoom ="";
+			String noOfRoom = "";
 			System.out.println("IN Reducer" + key.toString());
 			System.out.println(key.get());
 			// Adding Average price for No of romms into hBase table
-			if(key.get()==1){
+			if (key.get() == 1) {
 				System.out.println("one");
 				noOfRoom = "one";
-			}else if(key.get()==2){
+			} else if (key.get() == 2) {
 				System.out.println("two");
 				noOfRoom = "two";
-			}else if(key.get()==3){
+			} else if (key.get() == 3) {
 				System.out.println("three");
 				noOfRoom = "three";
-			}else{
+			} else {
 				System.out.println("fourPlus");
 				noOfRoom = "fourPlus";
 			}
-			//System.out.println(averagePriceNoOfRoomsType);
+			// System.out.println(averagePriceNoOfRoomsType);
 			putTolistingsAnalyisByPlace.addColumn(Bytes.toBytes("AveragePriceByNoOfRooms"),
 					Bytes.toBytes(noOfRoom.toString()), Bytes.toBytes(averagePriceNoOfRoomsType));
 
@@ -264,7 +262,8 @@ public class AveragePriceByNoOfRooms {
 		}
 
 		@Override
-		protected void cleanup(Reducer<IntWritable, SortedMapWritable, ImmutableBytesWritable, Mutation>.Context context)
+		protected void cleanup(
+				Reducer<IntWritable, SortedMapWritable, ImmutableBytesWritable, Mutation>.Context context)
 				throws IOException, InterruptedException {
 			// TODO Auto-generated method stub
 
@@ -272,7 +271,7 @@ public class AveragePriceByNoOfRooms {
 			connection.close();
 
 			// Close the table Connection
-			 table.close();
+			table.close();
 		}
 
 	}

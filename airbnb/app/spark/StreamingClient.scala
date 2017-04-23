@@ -1,7 +1,6 @@
 package spark
 
-import javax.inject.Singleton
-
+import kafkaClients.KafkaRecommendationResultProducer
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.spark.streaming.kafka010.ConsumerStrategies.Subscribe
@@ -11,17 +10,16 @@ import org.apache.spark.streaming.kafka010.LocationStrategies.PreferConsistent
 /**
   * Created by akashnagesh on 4/17/17.
   */
-@Singleton
-class StreamingClient {
+class StreamingClient(kafkaProducer: KafkaRecommendationResultProducer) {
 
   //  val conf = Play.current.configuration
   val bootStrapServer = "localhost:9092" //conf.getString("kafka.bootstrap.servers").getOrElse("no bootstrap server in app config")
   println("inside this classss +++++++++++++++++++++" + bootStrapServer)
 
-  val userPreferenceTopic = "requestRecommendation" //conf.getString("kafka.topicIn").getOrElse("no input topic")
-  val sparkAppName = "airbnb"
+  //val userPreferenceTopic = "userPreference2" //conf.getString("kafka.topicIn").getOrElse("no input topic")
+  // val sparkAppName = "airbnb"
   //conf.getString("spark.appName").getOrElse("no spark application name")
-  val master = "local[*]"
+  // val master = "local[*]"
   //conf.getString("spark.master").getOrElse("no spark master")
   val consumerGroupId = "sparkConsumer" //conf.getString("streamconsumer.groupid").getOrElse("no group id for consumer")
 
@@ -45,7 +43,7 @@ class StreamingClient {
   val kafkaReceiverParams = Map[String, String](
     "metadata.broker.list" -> "192.168.10.2:9092")
 
-  val topics = Array("requestRecommendation")
+  val topics = Array("userPreference3")
   val stream = KafkaUtils.createDirectStream[String, String](
     ssc,
     PreferConsistent,
@@ -56,8 +54,18 @@ class StreamingClient {
   println("---------------------------")
   val x = mapped.foreachRDD { x => {
     val l = x.collect()
-    println("number of elements received in 4 seconds is " + l.length)
-    l.foreach(individualRecord => println("listing suitable ++++++++++++" + listingPredictor.recommendListing("111")))
+    l.foreach { individualRecord =>
+      val ar = individualRecord._2.toCharArray match {
+        case Array(a, b, c) => (a, b, c)
+      }
+
+      implicit def charToDouble(c: Char) = c.toDouble - 48
+
+      println("________________---------__-" + charToDouble(ar._1), charToDouble(ar._2), charToDouble(ar._3))
+      val messageToPublish = listingPredictor.recommendListing(charToDouble(ar._1), charToDouble(ar._2), charToDouble(ar._3)).map(a => a.toString() + "@")
+      println("recommended listings ======" + messageToPublish)
+      kafkaProducer.publishMessage(individualRecord._1, messageToPublish.toString())
+    }
   }
   }
   ssc.start()
