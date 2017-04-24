@@ -11,24 +11,23 @@ import play.api.mvc._
   */
 
 @Singleton
-class UserController @Inject()(averageAnalysisOfListing: AverageAnalysisOfListing) extends Controller{
+class UserController @Inject()(averageAnalysisOfListing: AverageAnalysisOfListing) extends Controller {
 
 
-  def graph = Action{
+  def graph = Action {
 
-       val maps= averageAnalysisOfListing.getAverageAnalysisOfPriceByRoomType("Berlin")
-       //val mapsforRooms = averageAnalysisOfListing.getAverageAnalysisOfPriceByNoOfRooms("Berlin")
+    val maps = averageAnalysisOfListing.getAverageAnalysisOfPriceByRoomType("Berlin")
+    //val mapsforRooms = averageAnalysisOfListing.getAverageAnalysisOfPriceByNoOfRooms("Berlin")
 
-      //val somesd =  maps += mapsforRooms
+    //val somesd =  maps += mapsforRooms
     // println(maps)
-       //maps.toList.foreach(x => println(x))
-        val some = Json.toJson(maps)
-       Ok(Json.toJson(maps))
-   }
+    //maps.toList.foreach(x => println(x))
+    val some = Json.toJson(maps)
+    Ok(Json.toJson(maps))
+  }
 
 
-
-  def graph1 = Action{
+  def graph1 = Action {
 
     //val maps= averageAnalysisOfListing.getAverageAnalysisOfPriceByRoomType("Berlin")
     val mapsforRooms = averageAnalysisOfListing.getAverageAnalysisOfPriceByNoOfRooms("Berlin")
@@ -37,6 +36,16 @@ class UserController @Inject()(averageAnalysisOfListing: AverageAnalysisOfListin
     mapsforRooms.toList.foreach(x => println(x))
     //val some = Json.toJson(mapsforRooms)
     Ok(Json.toJson(mapsforRooms))
+  }
+
+  def getAllGraphs = Action {
+    println("getting all the graphs")
+    val mapsforRooms = averageAnalysisOfListing.getAverageAnalysisOfPriceByNoOfRooms("Berlin")
+    val maps = averageAnalysisOfListing.getAverageAnalysisOfPriceByRoomType("Berlin")
+
+    val mapsOfMaps = Map("AnalysisOnNumberOfRooms" -> mapsforRooms, "AnalysisOnTypesOfRooms" -> maps)
+    //mapsforRooms.toList.foreach(x => println(x))
+    Ok(Json.toJson(mapsOfMaps))
   }
 
 

@@ -15,10 +15,9 @@ object hBase {
 
   //Return Connection pool for an HBase instance
 
-  def getConnection ={
-    val conf: Configuration= HBaseConfiguration.create
-    val connection = ConnectionFactory.createConnection(conf)
-    connection
+  def getConnection = {
+    val conf: Configuration = HBaseConfiguration.create
+    ConnectionFactory.createConnection(conf)
   }
 
 }

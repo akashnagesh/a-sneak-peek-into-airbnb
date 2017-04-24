@@ -6,7 +6,7 @@
 angular.module("UserRecommendation",["chart.js","rzModule","ui.bootstrap"]).controller("UserWebSocket",function ($scope,$http) {
 
     //var ws = new WebSocket('ws://localhost:9000/socket');
-    alert("Hi");
+   // alert("Hi");
 
     $scope.minSlider = {
         value: 10
@@ -34,15 +34,14 @@ angular.module("UserRecommendation",["chart.js","rzModule","ui.bootstrap"]).cont
 
 
     $scope.getGraph = function () {
-        alert("Getting Graph")
+       // alert("Getting Graph")
         $http.get('/graph').success(function (stats) {
             // alert(data);
-            console.log(stats);
+            //console.log(stats);
             //$scope.myData = stats;
             $scope.labels =[];
             $scope.data=[];
             for(var i in stats){
-
                 $scope.labels.push(i);
                 $scope.data.push(stats[i]);
             }
@@ -59,10 +58,10 @@ angular.module("UserRecommendation",["chart.js","rzModule","ui.bootstrap"]).cont
 
 
     $scope.getGraph1 = function () {
-        alert("Getting Graph")
+       // alert("Getting Graph")
         $http.get('/graph1').success(function (stats) {
             // alert(data);
-            console.log(stats);
+            //console.log(stats);
             //$scope.myData = stats;
             $scope.labels1 =[];
             $scope.data1=[];
@@ -81,6 +80,43 @@ angular.module("UserRecommendation",["chart.js","rzModule","ui.bootstrap"]).cont
         });
 
     }
+        $scope.getGraph1 = function () {
+
+           alert("Getting all Graph")
+            $http.get('/allGraphs').success(function (stats) {
+                // alert(data);
+                //console.log(stats);
+                //$scope.myData = stats;
+                //$scope.labels1 =[];
+                //$scope.data1=[];
+
+                $scope.testing = "AIRBNB"
+
+
+                // Preprocessing
+                for(var i in stats){
+                   stats[i].labels = [];
+                   stats[i].data= [];
+                }
+
+                // Loading labels and data
+                for(var j in stats){
+                   for(var k in stats[j]){
+                      if(k != "data" && k != "labels"){
+                        stats[j].data.push(stats[j][k]);
+                        stats[j].labels.push(k);
+                      }
+                  }
+                }
+                $scope.stats = stats;
+//                console.log(stats)
+//                for(var i in stats){
+//                   // $scope.labels1.push(i);
+//                    //$scope.data1.push(stats[i]);
+//                }
+            });
+
+        }
 
 
 

@@ -1,8 +1,10 @@
 package spark
 
+import java.io.File
+
 import breeze.numerics.sqrt
 import org.apache.spark.SparkContext
-import org.apache.spark.mllib.recommendation.{ALS, Rating}
+import org.apache.spark.mllib.recommendation.{ALS, MatrixFactorizationModel, Rating}
 import org.apache.spark.rdd.RDD
 
 /**
@@ -116,7 +118,11 @@ class ListingPredictor(val sc: SparkContext) {
     val test = ratings.filter { case Rating(listing_id, reviewer_id, rating) => (listing_id * reviewer_id) % 10 > 1 }.persist
 
 
-    val model = ALS.train(training.union(myRatingsRDD), 20, 10, 0.1)
+    val model = if (new File("/Users/akashnagesh/Desktop/savedModel").exists()) MatrixFactorizationModel.load(sc, "/Users/akashnagesh/Desktop/savedModel") else {
+      val m = ALS.train(training.union(myRatingsRDD), 20, 10, 0.1)
+      m.save(sc, "/Users/akashnagesh/Desktop/savedModel")
+      m
+    }
 
     val ListingsSeen = myRatingsRDD.map(x => x.product).collect().toList
 

@@ -84,7 +84,7 @@ class HomeController @Inject()(val messagesApi: MessagesApi)(userDalImpl: UserDa
   }
 
 
-  def echo = WebSocket.acceptOrResult[String, String] { request =>
+  def getRecommendation = WebSocket.acceptOrResult[String, String] { request =>
     Future.successful(request.session.get("user") match {
       case None => Left(Forbidden)
       case Some(user) => Right(ActorFlow.actorRef(out => RecommendationWebSocketActor.props(out, myKafkaProducer, consumerClientManagerActor, user)))

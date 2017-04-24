@@ -4,22 +4,16 @@ package hBase
   * Created by vinay on 4/18/17.
   */
 object hBaseTableNames {
-
-
   //HBase Table for storing all Listing Analysis By Place
   val ListingAnalysisByPlace = "ListingsAnalysisByPlace"
-
   //Coulum Family for the HBase table ListingsAnalysisByPlace
-
 }
 
 
-
 //Class has all column families for the ListingsAnalysisByPlace table
-object ListingsAnalysisByPlace{
+object ListingsAnalysisByPlace {
 
-  val AveragePriceByRoomType= "AveragePriceByRoomType"
-
+  val AveragePriceByRoomType = "AveragePriceByRoomType"
 
 
   val AveragePriceByNoOfRooms = "AveragePriceByNoOfRooms"
@@ -28,16 +22,16 @@ object ListingsAnalysisByPlace{
 
 
 //Class has all columns for AveragePriceByRoomType column family
-object AveragePriceByRoomType{
+object AveragePriceByRoomType {
 
-  val EntireHomeApt ="Entire home/apt"
-  val SharedRoom ="Shared room"
-  val PrivateRoom ="Private room"
+  val EntireHomeApt = "Entire home/apt"
+  val SharedRoom = "Shared room"
+  val PrivateRoom = "Private room"
 
 }
 
 //Class has all columns for AveragePriceByNoOfRooms column family
-object  AveragePriceByNoOfRooms{
+object AveragePriceByNoOfRooms {
   val one = "one"
   val two = "two"
   val three = "three"

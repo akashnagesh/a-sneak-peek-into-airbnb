@@ -39,7 +39,7 @@
 
 </head>
 
-<body ng-app = "UserRecommendation">
+<body ng-app="UserRecommendation">
 
 <!-- Navigation -->
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -97,96 +97,107 @@
     </div>
     <!-- /.row -->
 
-    <div class="row" ng-controller = "UserWebSocket">
-        <button ng-click = "getGraph()">Click Here to get Graph Data</button>
-        <canvas id="bar" class="chart chart-bar"
-        chart-data="data" chart-labels="labels">
-          </canvas>
-    </div>
-    <div class="row" ng-controller = "UserWebSocket">
-        <button ng-click = "getGraph1()">Click Here to get Graph Data1</button>
-        <canvas id="bar" class="chart chart-bar"
-        chart-data="data1" chart-labels="labels1">
+    <div class="row" ng-controller="UserWebSocket">
+        <button ng-click="getGraph()">Click Here to get Graph Data</button>
+        <canvas id="bar1" class="chart chart-bar"
+                chart-data="data" chart-labels="labels">
         </canvas>
     </div>
-    <div class = "row" ng-controller = "UserWebSocket">
-        <rzslider rz-slider-model="minSlider.value"></rzslider>
-        <rzslider rz-slider-model="minSlider1.value"></rzslider>
-        <rzslider rz-slider-model="minSlider2.value"></rzslider>
+    <div class="row" ng-controller="UserWebSocket">
+        <button ng-click="getGraph1()">Click Here to get Graph Data1</button>
+        <canvas id="bar444" class="chart chart-bar"
+                chart-data="data1" chart-labels="labels1">
+        </canvas>
     </div>
-    <!-- Page Features -->
-    <div class="row text-center">
-        <input type="text" id="texttokafka" placeholder="enter a msg here to send to kafka"></input>
-        <button onclick="WebSocketTest()">Click me</button>
-        <p id="demo">Akash Nagesh</p>
-        <br/>
-        <br/>
-        <canvas id="myChart"></canvas>
-        <!--<div class="col-md-3 col-sm-6 hero-feature">-->
-        <!--<div class="thumbnail">-->
-        <!--<img src="http://placehold.it/800x500" alt="">-->
-        <!--<div class="caption">-->
-        <!--<h3>Feature Label</h3>-->
-        <!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>-->
-        <!--<p>-->
-        <!--<a href="#" class="btn btn-primary">Buy Now!</a> <a href="#" class="btn btn-default">More Info</a>-->
-        <!--</p>-->
-        <!--</div>-->
-        <!--</div>-->
-        <!--</div>-->
+</div>
+<div class="row" ng-controller="UserWebSocket">
+    <button ng-click="getGraph1()">Click Here to getAll graph data</button>
+    <canvas ng-repeat="stat in stats" class="chart chart-bar"
+            chart-data="stat.data" chart-labels="stat.labels">
+    </canvas>
 
-        <!--<div class="col-md-3 col-sm-6 hero-feature">-->
-        <!--<div class="thumbnail">-->
-        <!--<img src="http://placehold.it/800x500" alt="">-->
-        <!--<div class="caption">-->
-        <!--<h3>Feature Label</h3>-->
-        <!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>-->
-        <!--<p>-->
-        <!--<a href="#" class="btn btn-primary">Buy Now!</a> <a href="#" class="btn btn-default">More Info</a>-->
-        <!--</p>-->
-        <!--</div>-->
-        <!--</div>-->
-        <!--</div>-->
+    <!--<canvas id="bar444" class="chart chart-bar"-->
+            <!--chart-data="data2" chart-labels="labels2">-->
+    <!--</canvas>-->
+</div>
+<div class="row">
+    <rzslider rz-slider-model="minSlider.value"></rzslider>
+    <rzslider rz-slider-model="minSlider1.value"></rzslider>
+    <rzslider rz-slider-model="minSlider2.value"></rzslider>
+</div>
+<!-- Page Features -->
+<div class="row text-center">
+    <input type="text" id="texttokafka" placeholder="enter a msg here to send to kafka"></input>
+    <button onclick="WebSocketTest()">Click me</button>
+    <p id="demo">Akash Nagesh</p>
+    <br/>
+    <br/>
+    <canvas id="myChart"></canvas>
+    <!--<div class="col-md-3 col-sm-6 hero-feature">-->
+    <!--<div class="thumbnail">-->
+    <!--<img src="http://placehold.it/800x500" alt="">-->
+    <!--<div class="caption">-->
+    <!--<h3>Feature Label</h3>-->
+    <!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>-->
+    <!--<p>-->
+    <!--<a href="#" class="btn btn-primary">Buy Now!</a> <a href="#" class="btn btn-default">More Info</a>-->
+    <!--</p>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
 
-        <!--<div class="col-md-3 col-sm-6 hero-feature">-->
-        <!--<div class="thumbnail">-->
-        <!--<img src="http://placehold.it/800x500" alt="">-->
-        <!--<div class="caption">-->
-        <!--<h3>Feature Label</h3>-->
-        <!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>-->
-        <!--<p>-->
-        <!--<a href="#" class="btn btn-primary">Buy Now!</a> <a href="#" class="btn btn-default">More Info</a>-->
-        <!--</p>-->
-        <!--</div>-->
-        <!--</div>-->
-        <!--</div>-->
+    <!--<div class="col-md-3 col-sm-6 hero-feature">-->
+    <!--<div class="thumbnail">-->
+    <!--<img src="http://placehold.it/800x500" alt="">-->
+    <!--<div class="caption">-->
+    <!--<h3>Feature Label</h3>-->
+    <!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>-->
+    <!--<p>-->
+    <!--<a href="#" class="btn btn-primary">Buy Now!</a> <a href="#" class="btn btn-default">More Info</a>-->
+    <!--</p>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
 
-        <!--<div class="col-md-3 col-sm-6 hero-feature">-->
-        <!--<div class="thumbnail">-->
-        <!--<img src="http://placehold.it/800x500" alt="">-->
-        <!--<div class="caption">-->
-        <!--<h3>Feature Label</h3>-->
-        <!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>-->
-        <!--<p>-->
-        <!--<a href="#" class="btn btn-primary">Buy Now!</a> <a href="#" class="btn btn-default">More Info</a>-->
-        <!--</p>-->
-        <!--</div>-->
-        <!--</div>-->
-        <!--</div>-->
+    <!--<div class="col-md-3 col-sm-6 hero-feature">-->
+    <!--<div class="thumbnail">-->
+    <!--<img src="http://placehold.it/800x500" alt="">-->
+    <!--<div class="caption">-->
+    <!--<h3>Feature Label</h3>-->
+    <!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>-->
+    <!--<p>-->
+    <!--<a href="#" class="btn btn-primary">Buy Now!</a> <a href="#" class="btn btn-default">More Info</a>-->
+    <!--</p>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
 
-    </div>
-    <!-- /.row -->
+    <!--<div class="col-md-3 col-sm-6 hero-feature">-->
+    <!--<div class="thumbnail">-->
+    <!--<img src="http://placehold.it/800x500" alt="">-->
+    <!--<div class="caption">-->
+    <!--<h3>Feature Label</h3>-->
+    <!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>-->
+    <!--<p>-->
+    <!--<a href="#" class="btn btn-primary">Buy Now!</a> <a href="#" class="btn btn-default">More Info</a>-->
+    <!--</p>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
 
-    <hr>
+</div>
+<!-- /.row -->
 
-    <!-- Footer -->
-    <footer>
-        <div class="row">
-            <div class="col-lg-12">
-                <p>Copyright &copy; Your Website 2014</p>
-            </div>
+<hr>
+
+<!-- Footer -->
+<footer>
+    <div class="row">
+        <div class="col-lg-12">
+            <p>Copyright &copy; Your Website 2014</p>
         </div>
-    </footer>
+    </div>
+</footer>
 
 </div>
 <!-- /.container -->
@@ -198,8 +209,6 @@
 <!-- Bootstrap Core JavaScript -->
 <script src="/assets/javascripts/bootstrap.min.js"></script>
 <script src="/assets/javascripts/websockets.js"></script>
-
-
 
 
 <!-- JAVA script that I should remove -->
@@ -220,6 +229,9 @@ var myChart = new Chart(ctx, {
     }]
   }
 });*/
+
+
+
 
 
 </script>
