@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -46,21 +47,38 @@ import com.BigData.utils.HBaseTablesName;
 
 public class AveragePriceByNoOfRooms {
 	public static void main(String[] args) throws Exception {
-		Configuration conf = HBaseConfiguration.create();
 
-		Job job = Job.getInstance(conf, "AvaerageAnalysisByPriceByNoOfRooms");
-		conf.set("Place", "Berlin");
-		job.setJarByClass(AveragePriceByNoOfRooms.class);
-		job.setMapperClass(AveragePriceByNoOfRoomsMapper.class);
+		if (args.length <= 0 || args.length % 2 != 0) {
+			System.out.println("Please sepcify the inputarguments in this format:");
+			System.out.println(
+					"hadoop jar <jar location> <path to main class> <city name> <path to input file, listings.csv>, ...");
+			System.exit(0);
+		}
+		List<String> cities = new ArrayList<>();
+		List<String> pathToInputFIles = new ArrayList<>();
+		for (int i = 0; i < args.length; i++) {
+			if (i % 2 == 0) {
+				cities.add(args[i]);
+			} else {
+				pathToInputFIles.add(args[i]);
+			}
+		}
+		for (int i = 0; i < cities.size(); i++) {
+			Configuration conf = HBaseConfiguration.create();
+			conf.set("Place", cities.get(i));
+			Job job = Job.getInstance(conf, "AvaerageAnalysisByPriceByNoOfRooms");
+			job.setJarByClass(AveragePriceByNoOfRooms.class);
+			job.setMapperClass(AveragePriceByNoOfRoomsMapper.class);
 
-		job.setMapOutputKeyClass(IntWritable.class);
-		job.setMapOutputValueClass(SortedMapWritable.class);
-		job.addCacheFile(new URI("/Stay/Cache/headerForBerlin#headerForBerlin"));
-		FileInputFormat.addInputPath(job, new Path(args[0]));
-		TableMapReduceUtil.initTableReducerJob(HBaseTablesName.tableNameForAnalysisOfListingByPlace,
-				AveragePriceByNoOfRoomReducer.class, job);
-
-		System.exit(job.waitForCompletion(true) ? 0 : 1);
+			job.setMapOutputKeyClass(IntWritable.class);
+			job.setMapOutputValueClass(SortedMapWritable.class);
+			job.addCacheFile(new URI("/Stay/Cache/headerForBerlin#headerForBerlin"));
+			FileInputFormat.addInputPath(job, new Path(pathToInputFIles.get(i)));
+			TableMapReduceUtil.initTableReducerJob(HBaseTablesName.tableNameForAnalysisOfListingByPlace,
+					AveragePriceByNoOfRoomReducer.class, job);
+			job.waitForCompletion(true);
+		}
+		System.exit(0);
 	}
 
 	private static class AveragePriceByNoOfRoomsMapper
@@ -72,7 +90,6 @@ public class AveragePriceByNoOfRooms {
 		private int indexOfprice = 0;
 
 		String[] headerList;
-		String place;
 		static {
 			File f = new File("/Users/akashnagesh/Desktop/mapredSysout");
 			try {
@@ -85,15 +102,17 @@ public class AveragePriceByNoOfRooms {
 		@Override
 		protected void setup(Mapper<LongWritable, Text, IntWritable, SortedMapWritable>.Context context)
 				throws IOException, InterruptedException {
-
+			BufferedReader bufferedReader = new BufferedReader(new FileReader("headerForBerlin"));
 			try {
-				BufferedReader bufferedReader = new BufferedReader(new FileReader("headerForBerlin"));
+
 				headerList = bufferedReader.readLine().split("\t");
 				indexOfprice = ColumnParser.getTheIndexOfTheColumn(headerList, "price");
 				indexOfBedRooms = ColumnParser.getTheIndexOfTheColumn(headerList, "bedrooms");
 
 			} catch (Exception e) {
 				System.out.println("Something Went Wrong");
+			} finally {
+				bufferedReader.close();
 			}
 		}
 
@@ -125,29 +144,6 @@ public class AveragePriceByNoOfRooms {
 
 	}
 
-	/*
-	 * private static class AveragePriceByRoomTypeCombiner extends
-	 * TableReducer<Text, SortedMapWritable, Text> {
-	 * 
-	 * @Override protected void reduce(Text key, Iterable<SortedMapWritable>
-	 * values, Context context) throws IOException, InterruptedException { //
-	 * TODO Auto-generated method stub final SortedMapWritable valOut = new
-	 * SortedMapWritable(); for (SortedMapWritable map : values) {
-	 * 
-	 * Set<Map.Entry<WritableComparable, Writable>> entrySet = map.entrySet();
-	 * Map.Entry<WritableComparable, Writable> next =
-	 * entrySet.iterator().next();
-	 * 
-	 * LongWritable presentValue = (LongWritable) valOut.get((DoubleWritable)
-	 * next.getKey());
-	 * 
-	 * if (presentValue == null) { valOut.put(next.getKey(), next.getValue()); }
-	 * else { valOut.put(next.getKey(), new LongWritable(presentValue.get() +
-	 * ((LongWritable) (next.getValue())).get())); }
-	 * 
-	 * map.clear(); } context.write(key, valOut); } }
-	 */
-
 	private static class AveragePriceByNoOfRoomReducer
 			extends TableReducer<IntWritable, SortedMapWritable, ImmutableBytesWritable> {
 
@@ -169,7 +165,6 @@ public class AveragePriceByNoOfRooms {
 		@Override
 		protected void setup(Reducer<IntWritable, SortedMapWritable, ImmutableBytesWritable, Mutation>.Context context)
 				throws IOException, InterruptedException {
-			System.out.println("IN Reducer");
 
 			connection = ConnectionFactory.createConnection(context.getConfiguration());
 			// Get Admin
@@ -233,7 +228,7 @@ public class AveragePriceByNoOfRooms {
 			count = priceList.size();
 			averagePriceNoOfRoomsType = sum / count;
 
-			Put putTolistingsAnalyisByPlace = new Put(Bytes.toBytes("Berlin"));
+			Put putTolistingsAnalyisByPlace = new Put(Bytes.toBytes(context.getConfiguration().get("Place")));
 
 			String noOfRoom = "";
 			System.out.println("IN Reducer" + key.toString());
@@ -266,22 +261,13 @@ public class AveragePriceByNoOfRooms {
 				Reducer<IntWritable, SortedMapWritable, ImmutableBytesWritable, Mutation>.Context context)
 				throws IOException, InterruptedException {
 			// TODO Auto-generated method stub
-
-			// Close the Connection
-			connection.close();
-
-			// Close the table Connection
-			table.close();
+			if (connection != null)
+				// Close the Connection
+				connection.close();
+			if (table != null)
+				// Close the table Connection
+				table.close();
 		}
-
-	}
-
-	private static String[] readFile(String filePath) throws FileNotFoundException {
-
-		BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath.toString()));
-		List<String> placeAndHeaders = bufferedReader.lines().collect(Collectors.toList());
-		String[] headerList = placeAndHeaders.get(0).toString().split("\t");
-		return headerList;
 
 	}
 
