@@ -1,10 +1,8 @@
 package spark
 
-import java.io.File
-
 import breeze.numerics.sqrt
 import org.apache.spark.SparkContext
-import org.apache.spark.mllib.recommendation.{ALS, MatrixFactorizationModel, Rating}
+import org.apache.spark.mllib.recommendation.{ALS, Rating}
 import org.apache.spark.rdd.RDD
 
 /**
@@ -91,7 +89,7 @@ class ListingPredictor(val sc: SparkContext) {
   }
 
 
-  def recommendListing(one: Double, two: Double, three: Double): List[(Int, String)] = {
+  def recommendListing(one: Double, two: Double, three: Double): List[(Int)] = {
 
     val ratings = getRatingRDD.map(_.split(",") match { case Array(user, item, rate, price) =>
       Rating(user.toInt, item.toInt, rate.toDouble)
@@ -118,11 +116,7 @@ class ListingPredictor(val sc: SparkContext) {
     val test = ratings.filter { case Rating(listing_id, reviewer_id, rating) => (listing_id * reviewer_id) % 10 > 1 }.persist
 
 
-    val model = if (new File("/Users/akashnagesh/Desktop/savedModel").exists()) MatrixFactorizationModel.load(sc, "/Users/akashnagesh/Desktop/savedModel") else {
-      val m = ALS.train(training.union(myRatingsRDD), 20, 10, 0.1)
-      m.save(sc, "/Users/akashnagesh/Desktop/savedModel")
-      m
-    }
+    val model = ALS.train(training.union(myRatingsRDD), 20, 10, 0.1)
 
     val ListingsSeen = myRatingsRDD.map(x => x.product).collect().toList
 
@@ -152,8 +146,8 @@ class ListingPredictor(val sc: SparkContext) {
 
     val recommendListing = getListingRDD.map { str =>
       val data = str.split(",")
-      (data(0).toInt, data(1))
-    }.filter { case (listing_id, name) => recommendedListingsId.contains(listing_id) }
+      (data(0).toInt)
+    }.filter { case (listing_id) => recommendedListingsId.contains(listing_id) }
 
     recommendListing.collect().toList
   }

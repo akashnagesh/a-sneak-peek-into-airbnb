@@ -71,7 +71,7 @@ class KafkaRecommendationResponseConsumer @Inject()(conf: Configuration) {
 
   def consumeMessage() = {
     import scala.collection.JavaConverters._
-    kConsumer.poll(2000)
+    kConsumer.poll(250)
   }
   private def initializeProperties(keyDeSerializer: String, valueDeSerializer: String): Properties = {
 

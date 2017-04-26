@@ -48,7 +48,7 @@ public class ListingsDataToHbase {
 		Job job = Job.getInstance(conf, "put-listingData-to-hbase");
 		job.setJarByClass(ListingsDataToHbase.class);
 		job.setMapperClass(ListingDataSelectorMapper.class);
-		job.setMapOutputKeyClass(IntWritable.class);
+		job.setMapOutputKeyClass(Text.class);
 		job.setMapOutputValueClass(Text.class);
 
 		FileInputFormat.addInputPath(job, new Path(args[0]));
@@ -57,7 +57,15 @@ public class ListingsDataToHbase {
 
 	}
 
-	protected static class ListingDataSelectorMapper extends Mapper<Object, Text, IntWritable, Text> {
+	protected static class ListingDataSelectorMapper extends Mapper<Object, Text, Text, Text> {
+		static {
+			File f = new File("/Users/akashnagesh/Desktop/hbasemapper");
+			try {
+				System.setOut(new PrintStream(f));
+			} catch (Exception e) {
+
+			}
+		}
 
 		@Override
 		protected void map(Object key, Text value, Context context) throws IOException, InterruptedException {
@@ -68,7 +76,8 @@ public class ListingsDataToHbase {
 				String seperator = "~@~";
 				String valOut = split[1] + seperator + split[4] + seperator + split[15] + seperator + split[17]
 						+ seperator + split[48] + seperator + split[49];
-				context.write(new IntWritable(Integer.parseInt(split[0])), new Text(valOut));
+				System.out.println(split[0]);
+				context.write(new Text(split[0].trim()), new Text(valOut));
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
@@ -76,20 +85,20 @@ public class ListingsDataToHbase {
 
 	}
 
-	protected static class TableWriterReducer extends TableReducer<IntWritable, Text, ImmutableBytesWritable> {
-
-		Connection connection;
-		Admin admin;
-		Table table;
-		Map<Integer, String> columnNames;
+	protected static class TableWriterReducer extends TableReducer<Text, Text, ImmutableBytesWritable> {
 		static {
-			File f = new File("/Users/akashnagesh/Desktop/sysoutfile");
+			File f = new File("/Users/akashnagesh/Desktop/reducerFile");
 			try {
 				System.setOut(new PrintStream(f));
 			} catch (Exception e) {
 
 			}
 		}
+
+		Connection connection;
+		Admin admin;
+		Table table;
+		Map<Integer, String> columnNames;
 
 		@Override
 		protected void setup(Context context) throws IOException, InterruptedException {
@@ -141,10 +150,12 @@ public class ListingsDataToHbase {
 		}
 
 		@Override
-		protected void reduce(IntWritable key, Iterable<Text> values, Context context)
+		protected void reduce(Text key, Iterable<Text> values, Context context)
 				throws IOException, InterruptedException {
 
-			Put putToTable = new Put(Bytes.toBytes(key.get()));
+			System.out.println("inside reducer " + key.toString());
+
+			Put putToTable = new Put(Bytes.toBytes(key.toString()));
 
 			String[] split = values.iterator().next().toString().split("~@~");
 

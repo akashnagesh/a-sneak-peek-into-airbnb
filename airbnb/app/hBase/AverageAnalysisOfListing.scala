@@ -4,6 +4,7 @@ import javax.inject.Singleton
 
 import org.apache.hadoop.hbase.TableName
 import org.apache.hadoop.hbase.client.Get
+import org.apache.hadoop.hbase.util.Bytes
 
 /**
   * Created by vinay on 4/17/17.
@@ -13,7 +14,7 @@ import org.apache.hadoop.hbase.client.Get
 class AverageAnalysisOfListing {
 
 
-  def getAverageAnalysisOfPriceByRoomType(place: String) = {
+  def getAverageAnalysisOfPriceByRoomType(place: String): Map[String, Double] = {
     val columnFamily: Array[Byte] = ListingsAnalysisByPlace.AveragePriceByRoomType.getBytes
     val homeColumn: Array[Byte] = AveragePriceByRoomType.EntireHomeApt.getBytes
     val sharedColumn: Array[Byte] = AveragePriceByRoomType.SharedRoom.getBytes
@@ -73,5 +74,98 @@ class AverageAnalysisOfListing {
     aggData
   }
 
+  def getCityTrend(city: String) = {
+    val columnFamily: Array[Byte] = ListingsAnalysisByPlace.CityTrend.getBytes
+
+    //Get the Table
+    val table = hBase.getConnection.getTable(TableName.valueOf(hBaseTableNames.ListingAnalysisByPlace))
+
+    val get = new Get(Bytes.toBytes(city)).addFamily(columnFamily)
+
+    val result = table.get(get)
+
+
+    val resultSet: java.util.NavigableMap[Array[Byte], Array[Byte]] = result.getFamilyMap(columnFamily)
+
+    val keySet: java.util.Set[Array[Byte]] = resultSet.keySet()
+
+    val iterator = keySet.iterator()
+
+    // I really wish I could write Java streams here!!!! scala 2.11.7 doesn't support it.
+
+    var map = Map[String, Float]()
+    while (iterator.hasNext) {
+      val nextQualifier = iterator.next()
+      val key = nextQualifier
+      val value = result.getValue(columnFamily, nextQualifier);
+      map = map + (Bytes.toString(key) -> (100 - Bytes.toFloat(value)))
+    }
+    table.close()
+    map
+  }
+
+
+  def getTopCustomers(city: String) = {
+    val columnFamily: Array[Byte] = ListingsAnalysisByPlace.TopTwentyCustomers.getBytes
+
+    //Get the Table
+    val table = hBase.getConnection.getTable(TableName.valueOf(hBaseTableNames.ListingAnalysisByPlace))
+
+    val get = new Get(Bytes.toBytes(city)).addFamily(columnFamily)
+
+    val result = table.get(get)
+
+    val resultSet: java.util.NavigableMap[Array[Byte], Array[Byte]] = result.getFamilyMap(columnFamily)
+
+    val entrySet: java.util.Set[java.util.Map.Entry[Array[Byte], Array[Byte]]] = resultSet.entrySet()
+
+    val iterator = entrySet.iterator()
+
+    // I really wish I could write Java streams here!!!! scala 2.11.7 doesn't support it.
+
+    var map = Map[String, Int]()
+    while (iterator.hasNext) {
+      val entry = iterator.next()
+
+      map = map + (Bytes.toDouble(entry.getKey).toString -> Bytes.toInt(entry.getValue))
+    }
+    table.close()
+    map
+  }
+
+  def getListingDetails(listingId: String) = {
+    val columnFamily: Array[Byte] = "ListingData".getBytes
+
+    //Get the Table
+    val table = hBase.getConnection.getTable(TableName.valueOf(hBaseTableNames.ListingsData))
+
+    val get = new Get(Bytes.toBytes(listingId.trim)).addFamily(columnFamily)
+
+    Option(table.get(get).getFamilyMap(columnFamily)) match {
+      case Some(x) => {
+        val i = x.entrySet().iterator()
+        var list = List[String](listingId)
+
+        while (i.hasNext) {
+          val e = i.next()
+          if (Bytes.toString(e.getKey).equals("url")) {
+            list = list :+ Bytes.toString(e.getValue)
+          }
+
+          if (Bytes.toString(e.getKey).equals("name")) {
+            list = list :+ Bytes.toString(e.getValue)
+          }
+
+
+          if (Bytes.toString(e.getKey).equals("thumbnail")) {
+            list = list :+ Bytes.toString(e.getValue)
+          }
+
+        }
+        list
+      }
+      case _ => List()
+    }
+  }
 
 }

@@ -9,10 +9,12 @@ import akka.routing.RoundRobinPool
 import akka.stream.Materializer
 import akka.util.Timeout
 import dataAccessLayer.{UserActionMessages, UserDalImpl}
+import hBase.AverageAnalysisOfListing
 import kafkaClients.{KafkaRecommendationRequestProducer, KafkaRecommendationResponseConsumer, KafkaRecommendationResultProducer}
 import models.{FormsData, User}
 import org.apache.commons.lang3.StringUtils
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.libs.json.JsValue
 import play.api.libs.streams.ActorFlow
 import play.api.mvc._
 
@@ -24,7 +26,7 @@ import scala.concurrent.{ExecutionContext, Future}
   * This controller creates an `Action` to handle HTTP requests to the
   * application's home page.
   */
-class HomeController @Inject()(val messagesApi: MessagesApi)(userDalImpl: UserDalImpl)
+class HomeController @Inject()(val messagesApi: MessagesApi)(userDalImpl: UserDalImpl)(averageAnalysisOfListing: AverageAnalysisOfListing)
                               (myKafkaProducer: KafkaRecommendationRequestProducer)(myKafkaConsumer: KafkaRecommendationResponseConsumer)(myKafkaResultProducer: KafkaRecommendationResultProducer)
                               (implicit ec: ExecutionContext, system: ActorSystem, materializer: Materializer) extends Controller with I18nSupport {
 
@@ -84,10 +86,10 @@ class HomeController @Inject()(val messagesApi: MessagesApi)(userDalImpl: UserDa
   }
 
 
-  def getRecommendation = WebSocket.acceptOrResult[String, String] { request =>
+  def getRecommendation = WebSocket.acceptOrResult[JsValue, JsValue] { request =>
     Future.successful(request.session.get("user") match {
       case None => Left(Forbidden)
-      case Some(user) => Right(ActorFlow.actorRef(out => RecommendationWebSocketActor.props(out, myKafkaProducer, consumerClientManagerActor, user)))
+      case Some(user) => Right(ActorFlow.actorRef(out => RecommendationWebSocketActor.props(out, myKafkaProducer, consumerClientManagerActor, user,averageAnalysisOfListing)))
     })
   }
 

@@ -32,7 +32,11 @@ import org.apache.mahout.vectorizer.TFIDF;
 
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.common.collect.Multiset;
-
+/**
+ * 
+ * @author akashnagesh
+ *
+ */
 public class NaiveBayes {
 
 	Configuration configuration = new Configuration();

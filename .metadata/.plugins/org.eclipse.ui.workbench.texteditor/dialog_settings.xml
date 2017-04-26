@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.GotoLineAction$GotoLineDialog_dialogBounds">
+		<item value="484" key="DIALOG_X_ORIGIN"/>
+		<item value="292" key="DIALOG_Y_ORIGIN"/>
+	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="false" key="isRegEx"/>
-		<item value="Place" key="selection"/>
+		<item value="File" key="selection"/>
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="true" key="wrap"/>
 		<item value="false" key="wholeword"/>
 		<list key="findhistory">
+			<item value="File"/>
 			<item value="Place"/>
 			<item value="1178162"/>
 			<item value="bad"/>
@@ -15,7 +20,6 @@
 			<item value="56927"/>
 			<item value="versi"/>
 			<item value="tweet"/>
-			<item value="twee"/>
 		</list>
 		<list key="replacehistory">
 			<item value=""/>

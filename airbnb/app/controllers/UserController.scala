@@ -3,8 +3,11 @@ package controllers
 import javax.inject.{Inject, Singleton}
 
 import hBase.AverageAnalysisOfListing
-import play.api.libs.json.Json
+import play.api.libs.json._
 import play.api.mvc._
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 /**
   * Created by vinay on 4/17/17.
@@ -14,26 +17,21 @@ import play.api.mvc._
 class UserController @Inject()(averageAnalysisOfListing: AverageAnalysisOfListing) extends Controller {
 
 
-  def graph = Action {
-    val maps = averageAnalysisOfListing.getAverageAnalysisOfPriceByRoomType("Berlin")
-    Ok(Json.toJson(maps))
+  def graph1 = Action.async {
+    Future(averageAnalysisOfListing.getAverageAnalysisOfPriceByRoomType("Berlin")) map (x => Ok(Json.toJson(x)))
   }
 
 
-  def graph1 = Action {
-    val mapsforRooms = averageAnalysisOfListing.getAverageAnalysisOfPriceByNoOfRooms("Berlin")
-    Ok(Json.toJson(mapsforRooms))
+  def graph2 = Action.async {
+    Future(averageAnalysisOfListing.getAverageAnalysisOfPriceByNoOfRooms("Berlin")) map (x => Ok(Json.toJson(x)))
   }
 
-  def getAllGraphs = Action {
-    println("getting all the graphs")
-    val mapsforRooms = averageAnalysisOfListing.getAverageAnalysisOfPriceByNoOfRooms("Berlin")
-    val maps = averageAnalysisOfListing.getAverageAnalysisOfPriceByRoomType("Berlin")
-
-    val mapsOfMaps = Map("AnalysisOnNumberOfRooms" -> mapsforRooms, "AnalysisOnTypesOfRooms" -> maps)
-    //mapsforRooms.toList.foreach(x => println(x))
-    Ok(Json.toJson(mapsOfMaps))
+  def graph3 = Action.async {
+    Future(averageAnalysisOfListing.getCityTrend("Boston")) map (x => Ok(Json.toJson(x)))
   }
 
+  def graph4 = Action.async {
+    Future(averageAnalysisOfListing.getTopCustomers("Boston")) map (x => Ok(Json.toJson(x)))
+  }
 
 }

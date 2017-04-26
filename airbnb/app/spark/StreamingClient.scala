@@ -1,6 +1,10 @@
 package spark
 
+import hBase.{ListingsData, hBase, hBaseTableNames}
 import kafkaClients.KafkaRecommendationResultProducer
+import org.apache.hadoop.hbase.TableName
+import org.apache.hadoop.hbase.client.Get
+import org.apache.hadoop.hbase.util.Bytes
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.spark.streaming.kafka010.ConsumerStrategies.Subscribe
@@ -62,9 +66,11 @@ class StreamingClient(kafkaProducer: KafkaRecommendationResultProducer) {
       implicit def charToDouble(c: Char) = c.toDouble - 48
 
       println("________________---------__-" + charToDouble(ar._1), charToDouble(ar._2), charToDouble(ar._3))
-      val messageToPublish = listingPredictor.recommendListing(charToDouble(ar._1), charToDouble(ar._2), charToDouble(ar._3)).map(a => a.toString() + "@")
+      val messageToPublish = listingPredictor.recommendListing(charToDouble(ar._1), charToDouble(ar._2), charToDouble(ar._3)).map(a => a.toString())
+
       println("recommended listings ======" + messageToPublish)
       kafkaProducer.publishMessage(individualRecord._1, messageToPublish.toString())
+
     }
   }
   }

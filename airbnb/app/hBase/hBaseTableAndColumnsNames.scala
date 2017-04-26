@@ -7,6 +7,7 @@ object hBaseTableNames {
   //HBase Table for storing all Listing Analysis By Place
   val ListingAnalysisByPlace = "ListingsAnalysisByPlace"
   //Coulum Family for the HBase table ListingsAnalysisByPlace
+  val ListingsData = "ListingsData"
 }
 
 
@@ -18,6 +19,16 @@ object ListingsAnalysisByPlace {
 
   val AveragePriceByNoOfRooms = "AveragePriceByNoOfRooms"
 
+  val CityTrend = "CityTrend"
+
+  val TopTwentyCustomers = "TopTenCustomers"
+
+}
+
+//Class has all the column families for ListingsDataTable
+object ListingsData {
+  val ListingData = "ListingData"
+  val SentimentData = "PositiveSentiment"
 }
 
 
