@@ -1,10 +1,6 @@
 package com.BigData.MapReduceAnalysis;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -21,35 +17,32 @@ import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 import org.apache.hadoop.hbase.mapreduce.TableMapReduceUtil;
 import org.apache.hadoop.hbase.mapreduce.TableReducer;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer.Context;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 
+import com.BigData.MapReduceAnalysis.SentimentAnalysisHbase.SentimentIdentityMapper;
+import com.BigData.MapReduceAnalysis.SentimentAnalysisHbase.TableWriterReducer;
 import com.BigData.utils.HBaseTablesName;
 
-/**
- * This is a simple mapreduce to load selected features from the listing.csv to
- * hBase
- * 
- * @author akashnagesh
- *
- */
 public class ListingsDataToHbase {
 	public static void main(String args[]) throws Exception {
 		if (args.length < 1) {
-			System.out.println("hadoop jar <jar location> <path to main class> <path to listings.csv> ");
+			System.out.println("hadoop jar <jar location> <path to main class> <path to sentiment_analyzed_csv.csv> ");
 			System.out.println(
 					"Note that this job takes only 1 parameter(assuming the data is for Boston) and writes to ListingsData table");
 			System.exit(1);
 		}
 		Configuration conf = HBaseConfiguration.create();
-		Job job = Job.getInstance(conf, "put-listingData-to-hbase");
-		job.setJarByClass(ListingsDataToHbase.class);
-		job.setMapperClass(ListingDataSelectorMapper.class);
+		Job job = Job.getInstance(conf, "put-sentiment-to-hbase");
+		job.setJarByClass(SentimentAnalysisHbase.class);
+		job.setMapperClass(SentimentIdentityMapper.class);
 		job.setMapOutputKeyClass(IntWritable.class);
-		job.setMapOutputValueClass(Text.class);
+		job.setMapOutputValueClass(DoubleWritable.class);
 
 		FileInputFormat.addInputPath(job, new Path(args[0]));
 		TableMapReduceUtil.initTableReducerJob(HBaseTablesName.listingsTable, TableWriterReducer.class, job);
@@ -57,18 +50,16 @@ public class ListingsDataToHbase {
 
 	}
 
-	protected static class ListingDataSelectorMapper extends Mapper<Object, Text, IntWritable, Text> {
+	protected static class SentimentIdentityMapper extends Mapper<Object, Text, IntWritable, DoubleWritable> {
 
 		@Override
 		protected void map(Object key, Text value, Context context) throws IOException, InterruptedException {
-			String[] split = value.toString().split("\t");
-			if (split.length != 95)
+			String[] split = value.toString().split(",");
+			if (split.length != 2)
 				return;
 			try {
-				String seperator = "~@~";
-				String valOut = split[1] + seperator + split[4] + seperator + split[15] + seperator + split[17]
-						+ seperator + split[48] + seperator + split[49];
-				context.write(new IntWritable(Integer.parseInt(split[0])), new Text(valOut));
+				context.write(new IntWritable(Integer.parseInt(split[0])),
+						new DoubleWritable(Double.parseDouble(split[1])));
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
@@ -76,33 +67,17 @@ public class ListingsDataToHbase {
 
 	}
 
-	protected static class TableWriterReducer extends TableReducer<IntWritable, Text, ImmutableBytesWritable> {
+	protected static class TableWriterReducer
+			extends TableReducer<IntWritable, DoubleWritable, ImmutableBytesWritable> {
 
 		Connection connection;
 		Admin admin;
 		Table table;
-		Map<Integer, String> columnNames;
-		static {
-			File f = new File("/Users/akashnagesh/Desktop/sysoutfile");
-			try {
-				System.setOut(new PrintStream(f));
-			} catch (Exception e) {
-
-			}
-		}
 
 		@Override
 		protected void setup(Context context) throws IOException, InterruptedException {
 			// TODO Auto-generated method stub
 			// place = context.getConfiguration().get("Place");
-
-			columnNames = new HashMap<>();
-			columnNames.put(0, "url");
-			columnNames.put(1, "name");
-			columnNames.put(2, "thumbnail");
-			columnNames.put(3, "picture");
-			columnNames.put(4, "lat");
-			columnNames.put(5, "long");
 
 			connection = ConnectionFactory.createConnection(context.getConfiguration());
 			// Get Admin
@@ -114,10 +89,10 @@ public class ListingsDataToHbase {
 				// connection.getTable(TableName.valueOf(HBaseTablesName.tableNameForAnalysisOfListingByPlace));
 				table = connection.getTable(TableName.valueOf(HBaseTablesName.listingsTable));
 
-				if (!table.getTableDescriptor().hasFamily(Bytes.toBytes("ListingData"))) {
+				if (!table.getTableDescriptor().hasFamily(Bytes.toBytes("PositiveSentiment"))) {
 
 					// Create the Column family
-					HColumnDescriptor hColumnDescriptor = new HColumnDescriptor("ListingData");
+					HColumnDescriptor hColumnDescriptor = new HColumnDescriptor("PositiveSentiment");
 
 					// Add the column family
 					admin.addColumn(TableName.valueOf(HBaseTablesName.listingsTable), hColumnDescriptor);
@@ -130,7 +105,7 @@ public class ListingsDataToHbase {
 						TableName.valueOf(HBaseTablesName.listingsTable));
 
 				// create an column descriptor for the table
-				HColumnDescriptor hColumnDescriptor = new HColumnDescriptor("ListingData");
+				HColumnDescriptor hColumnDescriptor = new HColumnDescriptor("PositiveSentiment");
 
 				// add the column family for the table
 				tablefoThisJob.addFamily(hColumnDescriptor);
@@ -141,20 +116,13 @@ public class ListingsDataToHbase {
 		}
 
 		@Override
-		protected void reduce(IntWritable key, Iterable<Text> values, Context context)
+		protected void reduce(IntWritable key, Iterable<DoubleWritable> values, Context context)
 				throws IOException, InterruptedException {
 
 			Put putToTable = new Put(Bytes.toBytes(key.get()));
 
-			String[] split = values.iterator().next().toString().split("~@~");
-
-			for (int i = 0; i < split.length; i++) {
-				// System.out.println(columnNames.get(i));
-				// System.out.println(split[i]);
-				putToTable.addColumn(Bytes.toBytes("ListingData"), Bytes.toBytes(columnNames.get(i)),
-						Bytes.toBytes(split[i]));
-
-			}
+			putToTable.addColumn(Bytes.toBytes("PositiveSentiment"), Bytes.toBytes(key.get()),
+					Bytes.toBytes(values.iterator().next().get()));
 
 			// Will Write to ListingsAnalyisByPlace HBase Table
 			context.write(null, putToTable);

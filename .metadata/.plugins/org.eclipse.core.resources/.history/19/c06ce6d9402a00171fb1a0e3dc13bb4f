@@ -149,8 +149,8 @@ public class ListingsDataToHbase {
 			String[] split = values.iterator().next().toString().split("~@~");
 
 			for (int i = 0; i < split.length; i++) {
-				// System.out.println(columnNames.get(i));
-				// System.out.println(split[i]);
+				System.out.println(columnNames.get(i));
+				System.out.println(split[i]);
 				putToTable.addColumn(Bytes.toBytes("ListingData"), Bytes.toBytes(columnNames.get(i)),
 						Bytes.toBytes(split[i]));
 

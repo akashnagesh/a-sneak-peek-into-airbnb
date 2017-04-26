@@ -1,8 +1,6 @@
 package com.BigData.MapReduceAnalysis;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +19,7 @@ import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 import org.apache.hadoop.hbase.mapreduce.TableMapReduceUtil;
 import org.apache.hadoop.hbase.mapreduce.TableReducer;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -46,10 +45,10 @@ public class ListingsDataToHbase {
 		}
 		Configuration conf = HBaseConfiguration.create();
 		Job job = Job.getInstance(conf, "put-listingData-to-hbase");
-		job.setJarByClass(ListingsDataToHbase.class);
+		job.setJarByClass(SentimentAnalysisHbase.class);
 		job.setMapperClass(ListingDataSelectorMapper.class);
 		job.setMapOutputKeyClass(IntWritable.class);
-		job.setMapOutputValueClass(Text.class);
+		job.setMapOutputValueClass(DoubleWritable.class);
 
 		FileInputFormat.addInputPath(job, new Path(args[0]));
 		TableMapReduceUtil.initTableReducerJob(HBaseTablesName.listingsTable, TableWriterReducer.class, job);
@@ -82,14 +81,6 @@ public class ListingsDataToHbase {
 		Admin admin;
 		Table table;
 		Map<Integer, String> columnNames;
-		static {
-			File f = new File("/Users/akashnagesh/Desktop/sysoutfile");
-			try {
-				System.setOut(new PrintStream(f));
-			} catch (Exception e) {
-
-			}
-		}
 
 		@Override
 		protected void setup(Context context) throws IOException, InterruptedException {
@@ -99,10 +90,10 @@ public class ListingsDataToHbase {
 			columnNames = new HashMap<>();
 			columnNames.put(0, "url");
 			columnNames.put(1, "name");
-			columnNames.put(2, "thumbnail");
-			columnNames.put(3, "picture");
-			columnNames.put(4, "lat");
-			columnNames.put(5, "long");
+			columnNames.put(3, "thumbnail");
+			columnNames.put(4, "picture");
+			columnNames.put(5, "lat");
+			columnNames.put(6, "long");
 
 			connection = ConnectionFactory.createConnection(context.getConfiguration());
 			// Get Admin
@@ -149,10 +140,8 @@ public class ListingsDataToHbase {
 			String[] split = values.iterator().next().toString().split("~@~");
 
 			for (int i = 0; i < split.length; i++) {
-				// System.out.println(columnNames.get(i));
-				// System.out.println(split[i]);
-				putToTable.addColumn(Bytes.toBytes("ListingData"), Bytes.toBytes(columnNames.get(i)),
-						Bytes.toBytes(split[i]));
+				putToTable.addColumn(Bytes.toBytes("ListingData"), Bytes.toBytes(),
+						Bytes.toBytes(values.iterator().next().get()));
 
 			}
 

@@ -14,3 +14,5 @@
 1493167663013	Copy compilation unit
 1493168815145	Move compilation units
 1493180682405	Extract local variable 'split'
+1493182678865	Rename type 'SentimentIdentityMapper'
+1493183784214	Extract local variable 'split'
