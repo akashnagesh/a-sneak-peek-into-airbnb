@@ -1,6 +1,6 @@
 package controllers
 
-import javax.inject.{Inject, _}
+import javax.inject.Inject
 
 import actors.{ConsumerActor, KafkaConsumerClientManagerActor, LoginActor, RecommendationWebSocketActor}
 import akka.actor.{ActorSystem, Props}
@@ -39,7 +39,7 @@ class HomeController @Inject()(val messagesApi: MessagesApi)(userDalImpl: UserDa
 
   val loginRouter = system.actorOf(Props(classOf[LoginActor], userDalImpl).withRouter(RoundRobinPool(10)), name = "LoginActor")
   val consumerActor = system.actorOf(Props(classOf[ConsumerActor], myKafkaConsumer))
-  val consumerClientManagerActor = system.actorOf(Props(classOf[KafkaConsumerClientManagerActor], consumerActor,myKafkaResultProducer))
+  val consumerClientManagerActor = system.actorOf(Props(classOf[KafkaConsumerClientManagerActor], consumerActor, myKafkaResultProducer))
 
 
   def index = Action {
@@ -60,7 +60,7 @@ class HomeController @Inject()(val messagesApi: MessagesApi)(userDalImpl: UserDa
         userTuple => {
           loginRouter ? LoginActor.GetUser(userTuple._1, userTuple._2)
         } map {
-          case Some(user) => Ok(views.html.userMain("Welcome User")).withSession("user" -> userTuple._1)
+          case Some(user) => Ok(views.html.loggedInPage("Welcome User")).withSession("user" -> userTuple._1)
           case None => Ok("Invalid credentials")
         }
       )
