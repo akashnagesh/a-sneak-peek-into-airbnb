@@ -18,8 +18,10 @@ function WebSocketTest()
                   var received_msg = evt.data;
 
                   var data = jQuery.parseJSON(received_msg);
+                                    alert(data.length);
                   for(i=0;i<data.length;i++){
                   //console.log("image "+data[i][2])
+
                   if(data[i][2] != null && data[i][2] !== undefined && data[i][1] !=null && data[i][1] !== undefined){
                   $("#d"+i+"6").attr("data-l_id",data[i][0])
                   $("#d"+i+"1").removeClass("hidden");
@@ -65,6 +67,7 @@ function WebSocketTest()
                ws.onclose = function()
                {
                   // websocket is closed.
+                 // alert("websocket closed!!")
 
                };
 

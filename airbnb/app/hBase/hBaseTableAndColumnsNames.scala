@@ -1,8 +1,6 @@
 package hBase
 
-/**
-  * Created by vinay on 4/18/17.
-  */
+
 object hBaseTableNames {
   //HBase Table for storing all Listing Analysis By Place
   val ListingAnalysisByPlace = "ListingsAnalysisByPlace"

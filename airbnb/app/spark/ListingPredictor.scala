@@ -5,9 +5,6 @@ import org.apache.spark.SparkContext
 import org.apache.spark.mllib.recommendation.{ALS, Rating}
 import org.apache.spark.rdd.RDD
 
-/**
-  * Created by TEJESH on 04/16/17.
-  */
 class ListingPredictor(val sc: SparkContext) {
 
   val directory = "/Users/akashnagesh/Desktop/sparkInput"
