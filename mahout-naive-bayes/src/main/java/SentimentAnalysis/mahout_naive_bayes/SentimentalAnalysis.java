@@ -12,6 +12,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.omg.CORBA.INTERNAL;
 
 public class SentimentalAnalysis {
 
@@ -19,7 +20,7 @@ public class SentimentalAnalysis {
 		// TODO Auto-generated method stub
 		try {
 			Configuration conf = new Configuration();
-			Job job = Job.getInstance(conf, "sentiment-analysis");
+			Job job = Job.getInstance(conf, "Listings Review Sentiment Analysis");
 			job.setJarByClass(SentimentalAnalysis.class);
 			job.setMapperClass(SentimentAnalysisMapper.class);
 			job.setReducerClass(SentimentAnalysisReducer.class);
@@ -42,14 +43,14 @@ public class SentimentalAnalysis {
 		}
 	}
 
-	public static class SentimentAnalysisMapper extends Mapper<Object, Text, IntWritable, IntWritable> {
+	public static class SentimentAnalysisMapper extends Mapper<Object, Text, IntWritable,IntWritable> {
 
 		NaiveBayes nv;
 
 		@Override
 		protected void setup(Mapper<Object, Text, IntWritable, IntWritable>.Context context)
 				throws IOException, InterruptedException {
-			this.nv = new NaiveBayes("/Users/akashnagesh/Desktop/input/all-labelled-data");
+			this.nv = new NaiveBayes("/home/Akash/Desktop/mahoutSentiment/all-labelled-data");
 			try {
 				nv.trainModel();
 			} catch (Exception e) {
