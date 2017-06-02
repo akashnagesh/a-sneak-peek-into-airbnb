@@ -1,7 +1,7 @@
-# Project Title
+# A sneak peek into airbnb
 
-One Paragraph of project description goes here
-
+To analyze the vibe of the neighborhood from the available listing dataset and to suggest users some relevant listings based on his/her past experience or locality preference is the ideal goal of this project. We achieved this by building a reactive-big data project using Akka and Play framework.
+ 
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
