@@ -27,35 +27,30 @@ These instructions will get you a copy of the project up and running on your loc
 Things you need installed:
 
 1)JDK 8 or higher - http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
-2)Scala 2.11.x or higher - https://www.scala-lang.org/download/2.11.8.html
-3)Play 2.5.x or higher - https://www.playframework.com/download
-4)MySQL Server - https://dev.mysql.com/downloads/
-5)Apache Kafka - https://kafka.apache.org/downloads
-6)Apache Spark - git clone git://github.com/apache/spark.git
-7)Apache hbase - http://www.apache.org/dyn/closer.cgi/hbase/
-8)Apache Zookeeper - if you run hbase on a stand-alone mode or sudo distributed mode, you could use the the ZooKeeper that comes out  of the box with hbase.
-9)
 
-```
-Give examples
-```
+2)Scala 2.11.x or higher - https://www.scala-lang.org/download/2.11.8.html
+
+3)Play 2.5.x or higher - https://www.playframework.com/download
+
+4)MySQL Server - https://dev.mysql.com/downloads/
+
+5)Apache Kafka - https://kafka.apache.org/downloads
+
+6)Apache Spark - git clone git://github.com/apache/spark.git
+
+7)Apache hbase - http://www.apache.org/dyn/closer.cgi/hbase/
+
+8)Apache Zookeeper - if you run hbase on a stand-alone mode or sudo distributed mode, you could use the the ZooKeeper that comes out  of the box with hbase.
+
+9)Apache hadoop 2.7.3 or higher- http://hadoop.apache.org/releases.html
 
 ### Installing
 
-A step by step series of examples that tell you have to get a development env running
+Follow the steps in the sequence given below to get the application up and running.
 
-Say what the step will be
+1) git clone https://akashnagesh91@bitbucket.org/akashnagesh91/a-sneak-peek-into-airbnb.git
 
-```
-Give the example
-```
-
-And repeat
-
-```
-until finished
-```
-
+2)
 End with an example of getting some data out of the system or using it for a little demo
 
 ## Running the tests
