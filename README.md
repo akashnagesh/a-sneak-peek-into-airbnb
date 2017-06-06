@@ -2,7 +2,7 @@
 
 To analyze the vibe of the neighborhood from the available listing dataset and to suggest users some relevant listings based on his/her past experience or locality preference is the ideal goal of this project. We achieved this by building a reactive-big data project using Akka and Play framework.
 
- Technologies Used
+## Technologies Used
 
 ####Play-Framework
 ####Akka
