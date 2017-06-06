@@ -4,7 +4,7 @@ To analyze the vibe of the neighborhood from the available listing dataset and t
 
 ## Technologies Used
 
-###Play-Framework
+####Play-Framework
 ####Akka
 ####Slick(to help us make async DB calls to blocking DB)
 ####MySQL
