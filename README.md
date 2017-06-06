@@ -11,7 +11,7 @@ To analyze the vibe of the neighborhood from the available listing dataset and t
 ####Kafka
 ####Spark Streaming
 ####Spark MLlib
-####HBase
+####!HBase
 ####Apache Zookeeper
 ####HDFS
 ####Angular JS
